@@ -62,6 +62,8 @@ ecosystem → project → layer / flow → file → class / method
 
 The next capability is to enrich this view with stable symbols, call graphs, end-to-end flows, safe visual refactors, diff previews, validation, and undo.
 
+The canonical roadmap lives in [GitHub milestones](https://github.com/wesleysimplicio/simplicio-canvas/milestones) and [GitHub issues](https://github.com/wesleysimplicio/simplicio-canvas/issues). Local planning files are reference exports only.
+
 ## 🧠 Enriching with simplicio-mapper
 
 For a richer model of a real repository, generate mapper artifacts locally:
