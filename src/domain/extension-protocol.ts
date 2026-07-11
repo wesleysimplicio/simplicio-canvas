@@ -14,9 +14,13 @@ export function isCanvasMessage(value: unknown): value is CanvasMessage {
   const message = value as Record<string, unknown>
   if (message.type === 'canvas/ready') return message.protocol === EXTENSION_PROTOCOL_VERSION
   if (message.type === 'canvas/select') return !!message.selection && typeof message.selection === 'object'
-  if (message.type === 'editor/reveal') return typeof message.path === 'string' && !message.path.startsWith('..')
+  if (message.type === 'editor/reveal') return typeof message.path === 'string' && isWorkspaceRelativePath(message.path)
   if (message.type === 'workspace/changed') return Array.isArray(message.paths) && ['create', 'change', 'delete', 'rename'].includes(String(message.reason))
   return message.type === 'error' && typeof message.code === 'string' && typeof message.message === 'string'
+}
+
+export function isWorkspaceRelativePath(path: string): boolean {
+  return path.length > 0 && !path.startsWith('/') && !path.startsWith('\\') && !path.includes('\u0000') && !path.replace(/\\/g, '/').split('/').includes('..')
 }
 
 export function parseCanvasMessage(raw: string): CanvasMessage | undefined {

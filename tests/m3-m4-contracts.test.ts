@@ -1,13 +1,14 @@
 import { describe, expect, it, vi } from 'vitest'
 import { buildArchitectureGraph } from '../src/domain/architecture'
 import { CANVAS_SDK_VERSION, createMemoryStore, mountCanvas, validateCapabilityManifest } from '../src/domain/canvas-sdk'
-import { parseCanvasMessage, strictCsp } from '../src/domain/extension-protocol'
+import { isWorkspaceRelativePath, parseCanvasMessage, strictCsp } from '../src/domain/extension-protocol'
 import { createSelectionSync } from '../src/domain/selection-sync'
 import { IncrementalWorkspaceWatcher } from '../src/domain/workspace-watcher'
 import { analyzeImpact, explainNode } from '../src/domain/architecture-assistant'
 import { previewProposal, validateProposal } from '../src/domain/ai-contracts'
 import { AuditLog } from '../src/domain/audit-log'
 import { canApply } from '../src/domain/workspace-security'
+import { createExtensionApplyService } from '../src/domain/extension-apply'
 
 const graph = buildArchitectureGraph(['src/ui/app.ts', 'src/application/run.ts', 'src/domain/task.ts', 'tests/task.test.ts'])
 
@@ -30,6 +31,9 @@ describe('M3 canvas and extension contracts', () => {
     expect(parseCanvasMessage('{"type":"canvas/ready","protocol":1}')).toMatchObject({ type: 'canvas/ready' })
     expect(parseCanvasMessage('{"type":"canvas/ready","protocol":99}')).toBeUndefined()
     expect(parseCanvasMessage('{"type":"editor/reveal","path":"../../secret"}')).toBeUndefined()
+    expect(isWorkspaceRelativePath('src/main.ts')).toBe(true)
+    expect(isWorkspaceRelativePath('/etc/passwd')).toBe(false)
+    expect(isWorkspaceRelativePath('src/../secret')).toBe(false)
     expect(strictCsp('abcDEF_0123456789')).toContain("default-src 'none'")
     expect(() => strictCsp('short')).toThrow()
   })
@@ -66,5 +70,12 @@ describe('M4 AI intent, explanation and safety contracts', () => {
     expect(canApply({ trusted: true, root: '/workspace' }, '/workspace/src/a.ts')).toBe(true)
     expect(canApply({ trusted: false, root: '/workspace' }, '/workspace/src/a.ts')).toBe(false)
     expect(canApply({ trusted: true, root: '/workspace' }, '/workspace/../secret')).toBe(false)
+  })
+  it('keeps extension apply host-side and requires preview, trust and checkpoint receipt', async () => {
+    const service = createExtensionApplyService({ trusted: true, root: '/workspace' }, { write: vi.fn(async () => 'checkpoint-1') })
+    const plan = { version: 1 as const, operations: [], files: ['/workspace/a.ts'], symbols: [], imports: [], tests: [], summary: 'one', readonly: true as const }
+    const request = { plan, diffs: [{ path: '/workspace/a.ts', before: 'a', after: 'b' }], confirmation: 'APPLY', workspaceRoot: '/workspace', changedPaths: ['/workspace/a.ts'] }
+    expect(service.preview(request).allowed).toBe(true); expect((await service.apply(request)).checkpointId).toBe('checkpoint-1')
+    expect(() => service.preview({ ...request, changedPaths: ['/etc/passwd'] })).not.toThrow(); expect(service.preview({ ...request, changedPaths: ['/etc/passwd'] }).allowed).toBe(false)
   })
 })
