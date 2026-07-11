@@ -11,7 +11,9 @@
     "deploy:demo": "./scripts/deploy-demo.sh",
     "bootstrap": "node scripts/bootstrap.mjs --dry-run",
     "test": "vitest run",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "test:privacy": "vitest run tests/privacy.test.ts",
+    "test:a11y": "vitest run tests/a11y-contract.test.ts"
   },
   "dependencies": { "three": "^0.178.0" },
   "devDependencies": {
