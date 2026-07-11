@@ -4,6 +4,11 @@ export interface AnalyzedFile extends SourceFileInput { language: string; import
 export interface ProjectConnection { source: string; target: string; specifier: string; external: boolean; type: 'import' }
 export interface ProjectAnalysis { name: string; files: AnalyzedFile[]; connections: ProjectConnection[]; languages: Record<string, number>; skipped: number }
 
+export function sourceLines(content: string, limit = 300): Array<{ number: number; text: string }> {
+  const escape = (value: string) => value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  return content.split('\n').slice(0, limit).map((text, index) => ({ number: index + 1, text: escape(text) }))
+}
+
 const EXTENSIONS: Record<string, string> = {
   ts: 'TypeScript', tsx: 'TypeScript', js: 'JavaScript', jsx: 'JavaScript', mjs: 'JavaScript', cjs: 'JavaScript',
   py: 'Python', rs: 'Rust', go: 'Go', cs: 'C#', java: 'Java', kt: 'Kotlin', kts: 'Kotlin',
