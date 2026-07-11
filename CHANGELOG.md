@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.11.0 — 2026-07-11
+
+- Close the real-repository compatibility issue with an explicit unsupported-at-budget .NET boundary.
+- Publish verified five-stack Mapper evidence and nightly sanitized regression linkage.
+
 ## 2.10.0 — 2026-07-11
 
 - Add sanitized nightly regression issue linkage for scheduled compatibility failures.
