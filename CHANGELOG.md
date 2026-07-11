@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.6.0 — 2026-07-11
+
+- Add URL-persisted semantic zoom state with history restoration.
+- Add guarded Run/Debug lifecycle receipts with bounded output.
+- Add versioned atomic workspace cache inspection and explicit repair diagnostics.
+
 ## 1.5.0 — 2026-07-11
 
 - Add clickable Mapper flow endpoints with visible source provenance and camera focus.
