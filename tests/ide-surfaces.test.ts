@@ -4,7 +4,8 @@ import { buildExplorerTree, closeEditorTab, createEditorState, openEditorFile, u
 import { proposeEdgeConnection, proposeEdgeReversal } from '../src/domain/edge-refactor'
 import { searchCommands, normalizePreferences, DEFAULT_PREFERENCES } from '../src/domain/workspace-preferences'
 import { createReadOnlySourceControlAdapter, createSourceControlController, validateSourceControlAction, shouldRequirePullRequest, type SourceControlSnapshot } from '../src/domain/source-control'
-import { BrowserTerminalAdapter, TERMINAL_CONFIRMATION, validateTerminalRequest } from '../src/domain/terminal-adapter'
+import { BrowserTerminalAdapter, GuardedProcessAdapter, TERMINAL_CONFIRMATION, validateTerminalRequest } from '../src/domain/terminal-adapter'
+import { LazyEditorHost } from '../src/domain/lazy-editor'
 import { boundRunOutput, createRunSession, finishRunSession, restartRunSession, startRunSession, stopRunSession, validateLaunchConfiguration } from '../src/domain/run-debug'
 
 const graph = buildArchitectureGraph(['src/a.ts', 'src/b.ts', 'tests/a.test.ts'])
@@ -54,6 +55,19 @@ describe('IDE surface contracts', () => {
     expect(validateTerminalRequest({ command: 'mapper scan .', cwd: '/tmp', confirmation: TERMINAL_CONFIRMATION }, trust)).toContain('cwd must stay inside a trusted workspace')
     expect(validateTerminalRequest({ command: 'mapper scan .', cwd: '/workspace', env: { API_KEY: 'x' }, confirmation: TERMINAL_CONFIRMATION }, trust).some((error) => error.includes('environment key'))).toBe(true)
     const adapter = new BrowserTerminalAdapter(); const receipt = await adapter.run({ command: 'mapper scan .', cwd: '/workspace', confirmation: TERMINAL_CONFIRMATION }); expect(receipt.mode).toBe('browser-simulated'); expect(receipt.output).toContain('read-only')
+  })
+
+  it('streams a bounded host process through workspace and abort boundaries', async () => {
+    let seenSignal: AbortSignal | undefined
+    const adapter = new GuardedProcessAdapter(trust, async (request, onChunk, signal) => { seenSignal = signal; onChunk('x'.repeat(120_000)); return request.command.includes('ok') ? 0 : 1 })
+    const receipt = await adapter.run({ command: 'ok', cwd: '/workspace', confirmation: TERMINAL_CONFIRMATION }); expect(receipt.mode).toBe('local-pty'); expect(receipt.exitCode).toBe(0); expect(receipt.output.length).toBe(100_000); expect(seenSignal?.aborted).toBe(false)
+    await expect(adapter.run({ command: 'ok', cwd: '/tmp', confirmation: TERMINAL_CONFIRMATION })).rejects.toThrow('trusted workspace')
+  })
+
+  it('loads the editor engine lazily once and reveals requested locations', async () => {
+    let loads = 0; let value = ''; let location = ''; let disposed = false
+    const host = new LazyEditorHost(async () => { loads += 1; return { setValue: (next: string) => { value = next }, getValue: () => value, reveal: (line, column) => { location = `${line}:${column}` }, dispose: () => { disposed = true } } })
+    const first = await host.open('one', 0, 0); const second = await host.open('two', 4, 7); expect(first).toBe(second); expect(loads).toBe(1); expect(value).toBe('two'); expect(location).toBe('4:7'); expect(host.getState().status).toBe('ready'); host.dispose(); expect(disposed).toBe(true)
   })
 
   it('validates launch profiles and exposes a confirmation gate', () => {
