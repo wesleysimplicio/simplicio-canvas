@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.10.0 — 2026-07-11
+
+- Add sanitized nightly regression issue linkage for scheduled compatibility failures.
+- Make the .NET large-repository timeout an explicit partial/unsupported-at-budget capability.
+- Add verified matrix evidence for five public repositories without committing source.
+
 ## 2.9.0 — 2026-07-11
 
 - Record five verified real Mapper compatibility captures and one explicit .NET budget limitation.
