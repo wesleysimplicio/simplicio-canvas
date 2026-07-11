@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.5.0 — 2026-07-11
+
+- Add concrete host process streaming with abort/exit receipts.
+- Add pointer gesture edge connection previews and editor save/reparse refresh.
+- Add desktop artifact checksum/SBOM verification and onboarding timing integration.
+
 ## 2.4.0 — 2026-07-11
 
 - Add local first-insight timing to the onboarding tour.
