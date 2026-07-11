@@ -1,0 +1,8 @@
+{
+  "release": "2.5.0",
+  "artifact": "simplicio-canvas-web",
+  "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "signature": null,
+  "status": "checksum-only",
+  "note": "Fixture intentionally contains no fake signature; CI must inject a real Cosign or Minisign receipt."
+}

@@ -9,6 +9,7 @@ import { createMonacoLoader, LazyEditorHost } from '../src/domain/lazy-editor'
 import { IncrementalEditorController, findInEditor, syntaxDiagnostics } from '../src/domain/editor-services'
 import { WorkspaceCrudController } from '../src/domain/workspace-crud'
 import { createPublisherReceipt, verifyArtifact, type DistributionArtifact } from '../src/domain/distribution-contract'
+import { createSigningProvider } from '../src/domain/signing-provider'
 import { boundRunOutput, createRunSession, finishRunSession, restartRunSession, startRunSession, stopRunSession, validateLaunchConfiguration } from '../src/domain/run-debug'
 
 const graph = buildArchitectureGraph(['src/a.ts', 'src/b.ts', 'tests/a.test.ts'])
@@ -118,5 +119,10 @@ describe('IDE surface contracts', () => {
     const sha256 = 'a'.repeat(64); const artifact: DistributionArtifact = { name: 'simplicio-canvas', version: '2.4.0', platform: 'web', bytes: 42, sha256, signature: 'sig', signer: 'release-key' }
     expect((await verifyArtifact(artifact, 'b'.repeat(64))).status).toBe('invalid'); expect((await verifyArtifact({ ...artifact, signature: undefined, signer: undefined }, sha256)).status).toBe('checksum-only')
     const receipt = await createPublisherReceipt('2.4.0', [artifact], { 'simplicio-canvas:web': sha256 }, { verify: async (payload, signature, signer) => payload.includes('simplicio-canvas') && signature === 'sig' && signer === 'release-key' }); expect(receipt.artifacts[0].status).toBe('signed')
+  })
+
+  it('delegates signing and verification to an injected Cosign/Minisign runner', async () => {
+    const calls: string[][] = []; const provider = createSigningProvider({ tool: 'cosign', keyRef: 'env://COSIGN_KEY', publicKeyRef: 'release.pub' }, { run: async (command, args, input) => { calls.push([command, ...args]); expect(input).toContain('payload'); return { exitCode: 0, stdout: calls.length === 1 ? 'real-signature-from-ci' : '', stderr: '' } } })
+    expect(await provider.sign('payload')).toBe('real-signature-from-ci'); expect(await provider.verify('payload', 'real-signature-from-ci')).toBe(true); expect(calls[0]).toContain('sign-blob'); expect(calls[1]).toContain('verify-blob')
   })
 })
