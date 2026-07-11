@@ -1,6 +1,16 @@
 {
-  "name": "@simplicio/canvas-host-scaffold",
-  "private": true,
-  "type": "module",
-  "scripts": { "build": "tsc --project tsconfig.json --noEmit" }
+  "name": "simplicio-canvas",
+  "displayName": "Simplicio Canvas",
+  "description": "Visualize a trusted workspace as connected software pieces.",
+  "version": "0.1.0",
+  "publisher": "simplicio",
+  "license": "MIT",
+  "repository": { "type": "git", "url": "https://github.com/wesleysimplicio/simplicio-canvas.git" },
+  "engines": { "vscode": "^1.85.0" },
+  "categories": ["Other", "Visualization"],
+  "main": "./dist-package/extension/src/extension.js",
+  "activationEvents": ["onCommand:simplicioCanvas.open"],
+  "contributes": { "commands": [{ "command": "simplicioCanvas.open", "title": "Simplicio Canvas: Open Workspace" }] },
+  "files": ["dist-package/**", "README.md"],
+  "scripts": { "build": "tsc --project tsconfig.json --noEmit", "build:package": "tsc --project tsconfig.package.json" }
 }

@@ -1,0 +1,5 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": { "noEmit": false, "rootDir": "..", "outDir": "dist-package", "declaration": false, "sourceMap": false },
+  "include": ["src/**/*.ts", "../src/domain/canvas-sdk.ts", "../src/domain/extension-protocol.ts"]
+}

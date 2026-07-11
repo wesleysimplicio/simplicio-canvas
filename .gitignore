@@ -1,6 +1,8 @@
 node_modules/
 dist/
 dist-demo/
+extension/dist-package/
+extension/artifacts/
 coverage/
 .playwright-cli/
 .simplicio/
