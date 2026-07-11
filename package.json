@@ -19,6 +19,7 @@
     "test:compatibility": "vitest run tests/compatibility-matrix.test.ts",
     "verify:compatibility": "node scripts/verify-compatibility.mjs",
     "scan:compatibility": "node scripts/scan-compatibility.mjs --offline",
+    "scan:mapper": "node scripts/collect-compatibility-evidence.mjs",
     "verify:artifact": "node scripts/verify-artifact.mjs --require-checksum",
     "benchmark:webgl": "vitest run tests/instancing-benchmark.test.ts",
     "test:onboarding": "vitest run tests/onboarding-usability.test.ts",
