@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { createTelemetryEvent, deleteTelemetry, evaluateSlo, exportSloReport, exportTelemetry, recordTelemetry, validateTelemetryProperties } from '../src/domain/telemetry'
-import { importRuntimeTrace, runtimeEdges, validateRuntimeTrace } from '../src/domain/runtime-trace'
+import { correlateRuntimeTrace, importRuntimeTrace, runtimeEdges, validateRuntimeTrace } from '../src/domain/runtime-trace'
 import { evaluatePolicy, policyToSarif } from '../src/domain/architecture-policy'
 import { validateWorkspaceManifest } from '../src/domain/multi-repo'
 import { createWorkspaceSnapshot, recoverWorkspace, validateWorkspaceSnapshot } from '../src/domain/workspace-recovery'
@@ -31,6 +31,8 @@ describe('runtime trace contract', () => {
     const sanitized = { ...value, spans: [{ ...value.spans[0], attributes: undefined }] }
     const trace = importRuntimeTrace(sanitized)
     expect(runtimeEdges(trace)[0].id).toBe('runtime:t:s')
+    const correlation = correlateRuntimeTrace([{ from: 'a', to: 'b' }, { from: 'b', to: 'c' }], trace)
+    expect(correlation.matched).toEqual(['a\u0000b']); expect(correlation.unusedStatic).toEqual(['b\u0000c']); expect(correlation.unexpected).toEqual([]); expect(correlation.confidence).toBe(1)
   })
 })
 

@@ -2,6 +2,7 @@ import type { GraphEdge } from './graph-schema'
 
 export interface RuntimeSpan { traceId: string; spanId: string; parentSpanId?: string; from: string; to?: string; startedAt: string; durationMs: number; count: number; environment: string; attributes?: Record<string, string | number | boolean> }
 export interface RuntimeTrace { schema: 'simplicio-runtime-trace/v1'; spans: RuntimeSpan[]; importedAt: string; redacted: true }
+export interface RuntimeCorrelation { runtimeEdges: GraphEdge[]; matched: string[]; unexpected: string[]; unusedStatic: string[]; confidence: number }
 const forbidden = /(?:user|email|authorization|cookie|token|secret|password|body|content|path|url)/i
 export function validateRuntimeTrace(trace: unknown): string[] {
   if (!trace || typeof trace !== 'object') return ['trace must be an object']
@@ -23,4 +24,9 @@ export function importRuntimeTrace(value: unknown): RuntimeTrace {
 }
 export function runtimeEdges(trace: RuntimeTrace): GraphEdge[] {
   return trace.spans.filter((span): span is RuntimeSpan & { to: string } => Boolean(span.to)).map((span) => ({ id: `runtime:${span.traceId}:${span.spanId}`, from: span.from, to: span.to, type: 'call', label: `${span.count}× · ${span.durationMs}ms` }))
+}
+export function correlateRuntimeTrace(staticEdges: Array<{ from: string; to: string }>, trace: RuntimeTrace): RuntimeCorrelation {
+  const runtime = runtimeEdges(trace); const staticKeys = new Set(staticEdges.map((edge) => `${edge.from}\0${edge.to}`)); const runtimeKeys = new Set(runtime.map((edge) => `${edge.from}\0${edge.to}`))
+  const matched = [...runtimeKeys].filter((key) => staticKeys.has(key)); const unexpected = [...runtimeKeys].filter((key) => !staticKeys.has(key)); const unusedStatic = [...staticKeys].filter((key) => !runtimeKeys.has(key)); const confidence = runtime.length ? matched.length / runtimeKeys.size : 1
+  return { runtimeEdges: runtime, matched, unexpected, unusedStatic, confidence }
 }
