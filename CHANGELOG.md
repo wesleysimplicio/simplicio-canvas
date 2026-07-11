@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.9.0 — 2026-07-11
+
+- Add compatibility-matrix CI metadata for Python, TypeScript, .NET, Java and polyglot repositories.
+- Add incremental editor diagnostics, search, reparse and dirty-close protection.
+- Add visible workspace cache recovery actions (restore, discard and inspect).
+- Add deterministic graph revision diff export.
+
 ## 1.8.0 — 2026-07-11
 
 - Add deterministic 5,000-node renderer benchmark and clustering/LOD evidence.
