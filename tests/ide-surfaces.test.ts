@@ -5,7 +5,7 @@ import { proposeEdgeConnection, proposeEdgeReconnection, proposeEdgeReversal } f
 import { PreferencesStore, searchCommands, normalizePreferences, DEFAULT_PREFERENCES } from '../src/domain/workspace-preferences'
 import { createReadOnlySourceControlAdapter, createSourceControlController, validateSourceControlAction, shouldRequirePullRequest, type SourceControlSnapshot } from '../src/domain/source-control'
 import { BrowserTerminalAdapter, GuardedProcessAdapter, TERMINAL_CONFIRMATION, validateTerminalRequest } from '../src/domain/terminal-adapter'
-import { LazyEditorHost } from '../src/domain/lazy-editor'
+import { createMonacoLoader, LazyEditorHost } from '../src/domain/lazy-editor'
 import { IncrementalEditorController, findInEditor, syntaxDiagnostics } from '../src/domain/editor-services'
 import { WorkspaceCrudController } from '../src/domain/workspace-crud'
 import { boundRunOutput, createRunSession, finishRunSession, restartRunSession, startRunSession, stopRunSession, validateLaunchConfiguration } from '../src/domain/run-debug'
@@ -71,6 +71,11 @@ describe('IDE surface contracts', () => {
     let loads = 0; let value = ''; let location = ''; let disposed = false
     const host = new LazyEditorHost(async () => { loads += 1; return { setValue: (next: string) => { value = next }, getValue: () => value, reveal: (line, column) => { location = `${line}:${column}` }, dispose: () => { disposed = true } } })
     const first = await host.open('one', 0, 0); const second = await host.open('two', 4, 7); expect(first).toBe(second); expect(loads).toBe(1); expect(value).toBe('two'); expect(location).toBe('4:7'); expect(host.getState().status).toBe('ready'); host.dispose(); expect(disposed).toBe(true)
+  })
+
+  it('adapts a lazy Monaco module without bundling it into the browser MVP', async () => {
+    const calls: string[] = []; let content = ''; const container = {} as HTMLElement; const loader = createMonacoLoader(async () => ({ editor: { create: (host, options) => { expect(host).toBe(container); expect(options.automaticLayout).toBe(true); calls.push('create'); return { setValue: (value) => { content = value }, getValue: () => content, revealPositionInCenter: (position) => calls.push(`reveal:${position.lineNumber}:${position.column}`), layout: () => calls.push('layout'), dispose: () => calls.push('dispose') } } } }), container)
+    const engine = await loader(); engine.setValue('source'); expect(engine.getValue()).toBe('source'); engine.reveal(3, 2); engine.dispose(); expect(calls).toEqual(['create', 'reveal:3:2', 'dispose'])
   })
 
   it('provides diagnostics, find matches and incremental reparse with dirty-close protection', async () => {

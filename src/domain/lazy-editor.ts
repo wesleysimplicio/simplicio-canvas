@@ -2,6 +2,9 @@
 export interface EditorEngine { setValue(value: string): void; getValue(): string; reveal(line: number, column: number): void; dispose(): void }
 export type EditorEngineLoader = () => Promise<EditorEngine>
 export interface LazyEditorState { status: 'idle' | 'loading' | 'ready' | 'failed'; engine?: EditorEngine; error?: string }
+export interface MonacoEditorLike { setValue(value: string): void; getValue(): string; revealPositionInCenter(position: { lineNumber: number; column: number }): void; layout(): void; dispose(): void }
+export interface MonacoModuleLike { editor: { create(container: HTMLElement, options: { automaticLayout: boolean; minimap: { enabled: boolean } }): MonacoEditorLike } }
+export function createMonacoLoader(loadModule: () => Promise<MonacoModuleLike>, container: HTMLElement): EditorEngineLoader { return async () => { const module = await loadModule(); const editor = module.editor.create(container, { automaticLayout: true, minimap: { enabled: false } }); return { setValue: (value) => editor.setValue(value), getValue: () => editor.getValue(), reveal: (line, column) => editor.revealPositionInCenter({ lineNumber: line, column }), dispose: () => editor.dispose() } } }
 
 export class LazyEditorHost {
   private state: LazyEditorState = { status: 'idle' }
