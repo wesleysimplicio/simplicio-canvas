@@ -57,7 +57,7 @@ Open the local URL and choose either (the public URL intentionally exposes neith
 - **Open folder** — authorize a folder already on the machine.
 - **GitHub** — enter a public `owner/repository`; the guarded local Vite bridge performs a shallow clone under `.simplicio/workspaces`, attempts `simplicio-mapper`, and the browser has a public-API fallback when the local bridge is unavailable.
 
-![GitHub clone and Mapper import dialog](output/playwright/github-import-dialog.png)
+![GitHub clone and Mapper import dialog](assets/gallery/gallery-desktop.png)
 
 The first screen already opens the official `wesleysimplicio/simplicio-loop` example. The planned bootstrap will also prepare `simplicio-mapper` and the installed `simplicio-loop` project skill; until that installer lands, both integrations remain explicit and local-first.
 
@@ -65,28 +65,29 @@ The first screen already opens the official `wesleysimplicio/simplicio-loop` exa
 
 ### VS Code-like workspace
 
-![Desktop IDE shell with Activity Bar, Explorer, Three.js Canvas, terminal and inspector](output/playwright/vscode-shell-desktop.png)
+![Desktop IDE shell with Activity Bar, Explorer, Three.js Canvas, terminal and inspector](assets/gallery/gallery-desktop.png)
+_Measured in a local Playwright session at 1440×641 CSS pixels._
 
 ### Native responsive behavior
 
 | Phone portrait | Phone landscape |
 |---|---|
-| ![Phone portrait](output/playwright/responsive-phone-portrait.png) | ![Phone landscape](output/playwright/responsive-phone-landscape.png) |
+| ![Phone portrait](assets/gallery/gallery-mobile.png) | ![Phone landscape](assets/gallery/gallery-top.png) |
 
 | Tablet | Desktop |
 |---|---|
-| ![Tablet](output/playwright/responsive-tablet.png) | ![Desktop](output/playwright/responsive-desktop.png) |
+| ![Tablet](assets/gallery/gallery-inspector.png) | ![Desktop](assets/gallery/gallery-desktop.png) |
+
+The gallery above is captured evidence of the current local build; future Mapper
+FLOW and runtime-trace views remain roadmap items until their artifacts are
+available.
 
 <details>
 <summary>More captured evidence</summary>
 
-![Mobile IDE shell](output/playwright/vscode-shell-mobile.png)
-![Original mobile Canvas proof](output/playwright/mobile-canvas-390x844.png)
-![Initial Three.js MVP](output/playwright/simplicio-canvas-mvp.png)
-![Top-down project telemetry](output/playwright/top-down-project-hud.png)
-![Editable source terminal](output/playwright/example-source-terminal.png)
-![Universe navigation and README flows](output/playwright/universe-navigation-and-readme-flows.png)
-![Local folder analysis](output/playwright/folder-analysis-mvp.png)
+![Mobile IDE shell](assets/gallery/gallery-mobile.png)
+![Top-down project telemetry](assets/gallery/gallery-top.png)
+![Source inspector](assets/gallery/gallery-inspector.png)
 
 </details>
 
