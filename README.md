@@ -45,7 +45,7 @@ npm run dev
 Open the local URL and choose either:
 
 - **Open folder** — authorize a folder already on the machine.
-- **GitHub** — enter a public `owner/repository`; the guarded local Vite bridge performs a shallow clone under `.simplicio/workspaces`, attempts `simplicio-mapper`, then falls back to the Canvas analyzer if Mapper is unavailable.
+- **GitHub** — enter a public `owner/repository`; the guarded local Vite bridge performs a shallow clone under `.simplicio/workspaces`, attempts `simplicio-mapper`, and the browser has a public-API fallback when the local bridge is unavailable.
 
 ![GitHub clone and Mapper import dialog](output/playwright/github-import-dialog.png)
 

@@ -88,6 +88,22 @@ async function readFolderHandle(directory: FileSystemDirectoryHandle) {
   const walk=async(handle:FileSystemDirectoryHandle,prefix=''):Promise<void>=>{const iterable=handle as FileSystemDirectoryHandle & {values:()=>AsyncIterable<FileSystemHandle>};for await(const entry of iterable.values()){const path=prefix?`${prefix}/${entry.name}`:entry.name;if(entry.kind==='directory')await walk(entry as FileSystemDirectoryHandle,path);else{const file=await (entry as FileSystemFileHandle).getFile();let content='';if(file.size<=1_000_000)try{content=await file.text()}catch{content=''}inputs.push({path,content,size:file.size});writableHandles.set(path,entry as FileSystemFileHandle)}}}
   await walk(directory);const result=analyzeProject(directory.name,inputs);load(result.files.map(file=>file.path),directory.name,result)
 }
+async function readGitHubFallback(repository: ReturnType<typeof normalizeGitHubRepository>): Promise<SourceFileInput[]> {
+  const treeResponse = await fetch(`https://api.github.com/repos/${repository.owner}/${repository.repository}/git/trees/HEAD?recursive=1`, { headers: { Accept: 'application/vnd.github+json' } })
+  if (!treeResponse.ok) throw new Error(`GitHub não respondeu (${treeResponse.status}). Verifique o repositório público e o limite da API.`)
+  const tree = await treeResponse.json() as { tree?: Array<{ type: string; path: string; url: string }> }
+  const candidates = (tree.tree ?? []).filter((entry) => entry.type === 'blob' && !/^(\.git|node_modules|dist|build|coverage|\.venv|venv)\//.test(entry.path) && !/\.(png|jpe?g|gif|webp|ico|pdf|zip|woff2?|ttf|lock)$/i.test(entry.path)).slice(0, 300)
+  const files: SourceFileInput[] = []
+  for (const entry of candidates) {
+    try {
+      const response = await fetch(entry.url, { headers: { Accept: 'application/vnd.github+json' } }); if (!response.ok) continue
+      const blob = await response.json() as { encoding?: string; content?: string; size?: number }; if (blob.size && blob.size > 1_000_000 || blob.encoding !== 'base64' || !blob.content) continue
+      const bytes = Uint8Array.from(atob(blob.content.replace(/\s/g, '')), (char) => char.charCodeAt(0)); files.push({ path: entry.path, content: new TextDecoder().decode(bytes), size: bytes.byteLength })
+    } catch { /* a single unreadable blob must not abort the project */ }
+  }
+  if (!files.length) throw new Error('O GitHub não retornou arquivos de texto legíveis para este repositório.')
+  return files
+}
 document.querySelector('#open-project')!.addEventListener('click',async()=>{const picker=(window as Window & {showDirectoryPicker?:()=>Promise<FileSystemDirectoryHandle>}).showDirectoryPicker;if(!picker){document.querySelector<HTMLInputElement>('#folder')!.click();return}const status=document.querySelector<HTMLElement>('#scan-status')!;try{status.hidden=false;const directory=await picker();await readFolderHandle(directory)}catch(error){if((error as DOMException).name!=='AbortError')console.error(error)}finally{status.hidden=true}})
 document.querySelector<HTMLInputElement>('#folder')!.onchange=async(e)=>{
   writableHandles.clear()
@@ -111,3 +127,18 @@ const viewToggle=document.querySelector<HTMLButtonElement>('#view-toggle')!;cons
 document.querySelector('#inspector-close')!.addEventListener('click',()=>document.querySelector('#inspector')!.classList.remove('open'))
 function resize(){const layout=responsiveLayout(innerWidth,innerHeight);document.documentElement.dataset.viewport=layout.mode;document.documentElement.dataset.hud=layout.hud;const el=document.querySelector<HTMLElement>('#stage')!;const width=Math.max(1,el.clientWidth),height=Math.max(1,el.clientHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,innerWidth<700?1.5:2));renderer.setSize(width,height,false);camera.aspect=width/height;camera.updateProjectionMatrix()}addEventListener('resize',resize);addEventListener('orientationchange',resize);resize()
 function animate(t:number){controls.update();meshNodes.forEach((n,m)=>m.position.y=(m.userData.baseY??1)+Math.sin(t*.001+n.x)*.045);renderer.render(scene,camera);requestAnimationFrame(animate)}requestAnimationFrame(animate)
+githubDialog.querySelector('form')!.addEventListener('submit', async (event) => {
+  event.preventDefault(); event.stopImmediatePropagation()
+  let repository: ReturnType<typeof normalizeGitHubRepository>
+  try { repository = normalizeGitHubRepository(githubInput.value) } catch (error) { githubStatus.textContent = (error as Error).message; githubStatus.className = 'error'; return }
+  const button = document.querySelector<HTMLButtonElement>('#github-submit')!; button.disabled = true; githubStatus.className = ''; githubStatus.textContent = `Importando ${repository.slug}…`
+  try {
+    const response = await fetch('/api/github/import', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ repository: repository.slug }) })
+    const payload = await response.json() as { name?: string; files?: SourceFileInput[]; mapper?: { available: boolean; detail: string }; error?: string }
+    if (!response.ok) throw new Error(payload.error ?? 'Ponte local indisponível')
+    const result = analyzeProject(payload.name ?? repository.slug, payload.files ?? []); load(result.files.map(file => file.path), `${repository.slug} · GitHub`, result); githubStatus.textContent = payload.mapper?.available ? 'Clone e Mapper concluídos.' : 'Clone concluído; análise básica ativa.'; setTimeout(() => githubDialog.hidden = true, 900)
+  } catch {
+    try { githubStatus.textContent = 'Lendo a árvore pública do GitHub…'; const files = await readGitHubFallback(repository); const result = analyzeProject(repository.slug, files); load(result.files.map(file => file.path), `${repository.slug} · GitHub`, result); githubStatus.textContent = 'Projeto GitHub carregado pelo navegador; instale o Mapper para enriquecer a leitura.'; setTimeout(() => githubDialog.hidden = true, 900) }
+    catch (error) { githubStatus.textContent = (error as Error).message; githubStatus.className = 'error' }
+  } finally { button.disabled = false }
+}, true)
