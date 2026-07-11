@@ -64,9 +64,9 @@ export function extractImports(language: string, content: string): string[] {
 }
 
 function normalize(path: string): string { const parts:string[]=[]; for(const bit of path.split('/')) bit==='..'?parts.pop():bit!=='.'&&parts.push(bit); return parts.join('/') }
-function resolveImport(source: string, specifier: string, allPaths: Set<string>): string | undefined {
-  if (!specifier.startsWith('.')) return undefined
-  const base = source.split('/').slice(0,-1).join('/'); const candidate = normalize(`${base}/${specifier}`)
+function resolveImport(source: string, specifier: string, language: string, allPaths: Set<string>): string | undefined {
+  if (!specifier.startsWith('.') && language !== 'Python') return undefined
+  const base = source.split('/').slice(0,-1).join('/'); const candidate = specifier.startsWith('.') ? normalize(`${base}/${specifier}`) : specifier.replace(/\./g, '/')
   const suffixes = ['', '.ts','.tsx','.js','.jsx','.py','.rs','.go','/index.ts','/index.tsx','/index.js','/__init__.py']
   return suffixes.map((suffix)=>candidate+suffix).find((path)=>allPaths.has(path))
 }
@@ -76,7 +76,7 @@ export function analyzeProject(name: string, input: SourceFileInput[]): ProjectA
   const paths = new Set(accepted.map((file)=>file.path)); const languages:Record<string,number>={}; const connections:ProjectConnection[]=[]
   const files = accepted.map((file):AnalyzedFile=>{
     const language=detectLanguage(file.path,file.content); languages[language]=(languages[language]??0)+1
-    const imports=extractImports(language,file.content).map((specifier):ImportReference=>{const resolvedPath=resolveImport(file.path,specifier,paths);const external=!resolvedPath;connections.push({source:file.path,target:resolvedPath??specifier,specifier,external,type:'import'});return {specifier,resolvedPath,external}})
+    const imports=extractImports(language,file.content).map((specifier):ImportReference=>{const resolvedPath=resolveImport(file.path,specifier,language,paths);const external=!resolvedPath;connections.push({source:file.path,target:resolvedPath??specifier,specifier,external,type:'import'});return {specifier,resolvedPath,external}})
     return {...file,language,imports,lines:file.content ? file.content.split('\n').length : 0}
   })
   const documentedFlows = files.filter((file) => /(^|\/)readme[^/]*\.(md|mdx)$/i.test(file.path)).flatMap((file) => extractDocumentedFlows(file.path, file.content))
