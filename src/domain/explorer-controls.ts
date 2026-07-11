@@ -19,3 +19,9 @@ export function minimapBounds(items: Array<{ x: number; z: number }>): { minX: n
   if (!items.length) return { minX: 0, maxX: 1, minZ: 0, maxZ: 1 }
   return { minX: Math.min(...items.map((item) => item.x)), maxX: Math.max(...items.map((item) => item.x)), minZ: Math.min(...items.map((item) => item.z)), maxZ: Math.max(...items.map((item) => item.z)) }
 }
+export interface FocusFrame { x: number; z: number; span: number }
+/** Compute a stable camera target/frame for a filtered selection. */
+export function focusFrame(items: Array<{ x: number; z: number }>, padding = 1.25): FocusFrame {
+  const bounds = minimapBounds(items); const span = Math.max(bounds.maxX - bounds.minX, bounds.maxZ - bounds.minZ, 2) * Math.max(1, padding)
+  return { x: (bounds.minX + bounds.maxX) / 2, z: (bounds.minZ + bounds.maxZ) / 2, span }
+}
