@@ -1,6 +1,6 @@
 # Public demo deployment
 
-The public build is intentionally read-only. It contains only the bundled `wesleysimplicio/simplicio-loop` snapshot and disables folder import, GitHub import, source editing, saving, process execution and piece dragging.
+The repository supports two builds. `npm run build:demo` is the intentionally read-only showcase build. The live HostGator release uses the interactive production build: it opens the bundled snapshot, accepts a local folder, and imports public GitHub repositories through the HostGator PHP bridge with bounded files and no credentials.
 
 Build it with:
 
@@ -8,7 +8,7 @@ Build it with:
 npm run build:demo
 ```
 
-Upload it with credentials supplied only through the environment:
+Upload the production release with credentials supplied only through the environment:
 
 ```bash
 FTP_HOST=ftp.example.com \

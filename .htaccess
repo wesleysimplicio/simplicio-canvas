@@ -1,0 +1,2 @@
+RewriteEngine On
+RewriteRule ^api/github/import/?$ api/github-import.php [L,QSA]

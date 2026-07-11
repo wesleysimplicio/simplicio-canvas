@@ -4,7 +4,7 @@
   <strong>English</strong> · <a href="docs/i18n/README.pt-BR.md">Português</a> · <a href="docs/i18n/README.es.md">Español</a> · <a href="docs/i18n/README.fr.md">Français</a> · <a href="docs/i18n/README.de.md">Deutsch</a> · <a href="docs/i18n/README.it.md">Italiano</a> · <a href="docs/i18n/README.nl.md">Nederlands</a> · <a href="docs/i18n/README.pl.md">Polski</a> · <a href="docs/i18n/README.ru.md">Русский</a> · <a href="docs/i18n/README.uk.md">Українська</a> · <a href="docs/i18n/README.tr.md">Türkçe</a> · <a href="docs/i18n/README.ar.md">العربية</a> · <a href="docs/i18n/README.hi.md">हिन्दी</a> · <a href="docs/i18n/README.ja.md">日本語</a> · <a href="docs/i18n/README.zh-CN.md">简体中文</a>
 </p>
 
-<p align="center"><a href="https://simpleti.com.br/simplicio_canvas/"><strong>▶ Open the live read-only demo</strong></a></p>
+<p align="center"><a href="https://simpleti.com.br/simplicio_canvas/"><strong>▶ Open the live Canvas 1.0</strong></a></p>
 
 <p align="center">
   <img src="assets/simplicio-canvas-overview.png" alt="Simplicio Canvas renders a software project as connected puzzle pieces in a Three.js workspace" width="920" />
