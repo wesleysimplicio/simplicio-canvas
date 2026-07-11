@@ -17,10 +17,12 @@
     "test:a11y": "vitest run tests/a11y-contract.test.ts",
     "benchmark:render": "vitest run tests/render-benchmark.test.ts",
     "test:compatibility": "vitest run tests/compatibility-matrix.test.ts",
+    "verify:compatibility": "node scripts/verify-compatibility.mjs",
     "benchmark:webgl": "vitest run tests/instancing-benchmark.test.ts",
     "test:onboarding": "vitest run tests/onboarding-usability.test.ts",
     "verify:pwa": "node scripts/verify-pwa.mjs",
-    "verify:release": "node scripts/verify-release.mjs"
+    "verify:release": "node scripts/verify-release.mjs",
+    "test:usability": "vitest run tests/onboarding-metrics.test.ts tests/onboarding-usability.test.ts"
   },
   "dependencies": { "three": "^0.178.0" },
   "devDependencies": {

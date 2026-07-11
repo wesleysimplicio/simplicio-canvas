@@ -1,14 +1,7 @@
 # Compatibility matrix
 
-Canvas tracks representative public repositories without vendoring their source. The machine-readable manifest is [`fixtures/compatibility-matrix.json`](../fixtures/compatibility-matrix.json); `npm run test:compatibility` validates its schema and privacy boundary.
+`fixtures/compatibility-matrix.json` is a metadata-only compatibility ledger. It records repository slug, stack, size class, verification state and source policy; it never vendors or redistributes repository source.
 
-| Repository | Stack | Size | Status |
-|---|---|---:|---|
-| `wesleysimplicio/simplicio-loop` | Python | small | verified |
-| `psf/requests` | Python | medium | partial |
-| `vitejs/vite` | TypeScript | large | partial |
-| `dotnet/runtime` | .NET | large | planned |
-| `spring-projects/spring-petclinic` | Java | small | planned |
-| `EbookFoundation/free-programming-books` | polyglot | large | planned |
+Run `npm run verify:compatibility` in CI. The verifier rejects duplicate IDs, invalid GitHub slugs, unknown stacks/statuses and any source policy other than `metadata-only`. `verified` means an end-to-end scan has evidence, `partial` means known capabilities were exercised with gaps, and `planned` means the repository is queued but not yet claimed as supported.
 
-“Verified” means a local scan has browser/test evidence. “Partial” means the repository is a bounded public-import target but not yet a full golden fixture. “Planned” is tracked for the next compatibility run. The matrix stores repository identifiers and measurements only; it never redistributes repository source.
+Current fixture coverage: Simplicio Loop, Requests, Vite, .NET Runtime, Spring Petclinic and Free Programming Books across Python, TypeScript, .NET, Java and polyglot stacks.
