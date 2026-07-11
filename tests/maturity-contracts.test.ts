@@ -64,8 +64,8 @@ describe('onboarding and dependency contracts', () => {
   it('classifies dependency risk and validates offline reports', () => {
     expect(dependencySeverity({ name: 'x', scope: 'direct', manifest: 'package.json', vulnerabilityIds: ['CVE'] })).toBe('critical')
     expect(validateDependencyReport({ schema: 'simplicio-dependencies/v1', generatedAt: 'now', offline: true, dependencies: [{ name: 'x', scope: 'direct', manifest: 'package.json' }] })).toEqual([])
-    const report = analyzeDependencies([{ path: 'package.json', content: '{"dependencies":{"three":"^0.178.0"},"devDependencies":{"vitest":"^3"}}' }, { path: 'package-lock.json', content: '\n  "node_modules/lodash": {}' }], 'now')
+    const report = analyzeDependencies([{ path: 'package.json', content: '{"dependencies":{"three":"^0.178.0"},"devDependencies":{"vitest":"^3"}}' }, { path: 'package-lock.json', content: '\n  "node_modules/lodash": {}' }, { path: 'pyproject.toml', content: 'dependencies = [\n  "httpx>=1",\n  "pydantic"\n]' }], 'now')
     expect(report.offline).toBe(true)
-    expect(report.dependencies.map((item) => item.name)).toEqual(expect.arrayContaining(['three', 'vitest', 'lodash']))
+    expect(report.dependencies.map((item) => item.name)).toEqual(expect.arrayContaining(['three', 'vitest', 'lodash', 'httpx', 'pydantic']))
   })
 })

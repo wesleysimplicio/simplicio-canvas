@@ -18,7 +18,11 @@ export function analyzeDependencies(files: DependencyInput[], generatedAt = new 
       const names = file.content.matchAll(/(?:^|\n)\s{2,}["']?(?:node_modules\/)?(@?[\w./-]+?)(?:@[^"']+)?["']?\s*:/g)
       for (const match of names) if (match[1] && !dependencies.some((dep) => dep.name === match[1] && dep.manifest === file.path)) dependencies.push({ name: match[1], scope: 'transitive', manifest: file.path })
     }
-    if (/pyproject\.toml$/i.test(file.path)) for (const match of file.content.matchAll(/^\s*([A-Za-z0-9_.-]+)(?:\s*[=<>!~].*)?$/gm)) if (match[1] && !['project', 'dependencies'].includes(match[1])) dependencies.push({ name: match[1], scope: 'direct', manifest: file.path })
+    if (/pyproject\.toml$/i.test(file.path)) {
+      const section = file.content.match(/^\s*dependencies\s*=\s*\[([\s\S]*?)\]/m)?.[1] ?? ''
+      for (const match of section.matchAll(/["']([A-Za-z0-9_.-]+)(?:\s*[<>=!~].*)?["']/g)) dependencies.push({ name: match[1], scope: 'direct', manifest: file.path })
+    }
   }
-  return { schema: 'simplicio-dependencies/v1', generatedAt, offline: true, dependencies }
+  const unique = dependencies.filter((dependency, index, all) => all.findIndex((item) => item.name === dependency.name && item.scope === dependency.scope && item.manifest === dependency.manifest) === index)
+  return { schema: 'simplicio-dependencies/v1', generatedAt, offline: true, dependencies: unique }
 }
