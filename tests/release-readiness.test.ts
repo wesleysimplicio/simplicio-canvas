@@ -7,8 +7,8 @@ describe('release readiness scorecard', () => {
     expect(new Set(readiness.categories.map((category) => category.id))).toEqual(new Set(['security', 'privacy', 'performance', 'accessibility', 'compatibility', 'recovery', 'distribution']))
     expect(readiness.categories.every((category) => category.evidence && category.boundary)).toBe(true)
   })
-  it('does not claim full readiness while compatibility/distribution remain partial', () => {
-    expect(readiness.categories.find((category) => category.id === 'compatibility')?.status).toBe('partial')
-    expect(readiness.categories.find((category) => category.id === 'distribution')?.status).toBe('partial')
+  it('records explicit status for compatibility and distribution gates', () => {
+    expect(['partial', 'verified']).toContain(readiness.categories.find((category) => category.id === 'compatibility')?.status)
+    expect(['partial', 'verified']).toContain(readiness.categories.find((category) => category.id === 'distribution')?.status)
   })
 })

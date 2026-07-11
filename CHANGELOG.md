@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.13.0 — 2026-07-11
+
+- Promote compatibility and distribution to verified readiness after the five-stack evidence and signed VSIX receipt.
+- Keep unsupported .NET-at-budget behavior explicit in the scorecard and matrix.
+
 ## 2.12.0 — 2026-07-11
 
 - Configure protected Minisign fallback credentials for signed extension releases.

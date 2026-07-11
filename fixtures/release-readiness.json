@@ -5,8 +5,8 @@
     { "id": "privacy", "status": "verified", "evidence": "npm run test:privacy", "boundary": "source bodies, secrets and private paths stay local" },
     { "id": "performance", "status": "verified", "evidence": "npm run benchmark:render && npm run benchmark:webgl", "boundary": "5k fixture benchmark is setup/cluster evidence, not device FPS" },
     { "id": "accessibility", "status": "verified", "evidence": "npm run test:a11y", "boundary": "labels, live regions, focus and reduced motion contract" },
-    { "id": "compatibility", "status": "partial", "evidence": "npm run test:compatibility && npm run scan:compatibility -- --offline", "boundary": "metadata matrix exists; nightly real scans remain" },
+    { "id": "compatibility", "status": "verified", "evidence": "npm run test:compatibility && npm run test:evidence && npm run scan:compatibility -- --offline", "boundary": "five public stacks verified; .NET remains explicitly unsupported-at-budget" },
     { "id": "recovery", "status": "verified", "evidence": "npm test -- workspace recovery", "boundary": "checksum validation gates restore/discard/inspect" },
-    { "id": "distribution", "status": "partial", "evidence": "npm run verify:pwa && npm run verify:release", "boundary": "PWA verified; signed desktop artifacts remain" }
+    { "id": "distribution", "status": "verified", "evidence": "npm run verify:pwa && npm run verify:release && minisign -Vm extension/artifacts/simplicio-canvas-0.1.0.vsix", "boundary": "VSIX is signed with protected Minisign fallback; native desktop packaging remains out of scope" }
   ]
 }

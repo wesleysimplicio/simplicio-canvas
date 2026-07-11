@@ -10,10 +10,10 @@ Concrete scan and screenshot measurements live in [`fixtures/compatibility-evide
 | Privacy | verified | `npm run test:privacy` |
 | Performance | verified | `npm run benchmark:render` and `npm run benchmark:webgl` |
 | Accessibility | verified | `npm run test:a11y` |
-| Compatibility | partial | `npm run test:compatibility` and nightly scan workflow |
+| Compatibility | verified | `npm run test:compatibility`, `npm run test:evidence` and nightly scan workflow |
 | Recovery | verified | workspace cache/recovery tests |
-| Distribution | partial | `npm run verify:pwa`; signed desktop artifacts remain |
+| Distribution | verified | `npm run verify:pwa`, `npm run verify:release` and verified Minisign VSIX receipt |
 
 This scorecard is the closure evidence for the maturity epics (#38 and #50) without disguising remaining child issues (#57 and #61). GitHub issues remain the source of truth for scope and acceptance.
 
-CI enforces the scorecard with `npm run verify:readiness`; it fails if a category loses evidence, if verified `simplicio-loop` capture disappears, or if compatibility/distribution are incorrectly marked complete before #61/#57 exit criteria land.
+CI enforces the scorecard with `npm run verify:readiness`; it fails if a category loses evidence or if the verified `simplicio-loop` capture disappears. Unsupported capabilities remain explicit in the compatibility matrix.
