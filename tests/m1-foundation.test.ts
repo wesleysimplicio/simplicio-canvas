@@ -1,0 +1,20 @@
+import { describe, expect, it } from 'vitest'
+import { createCanonicalGraph, createGraphId, migrateGraph, parseGraphSnapshot, serializeGraph } from '../src/domain/graph-schema'
+import { classify } from '../src/domain/classification'
+import { scanPython, scanTypeScript } from '../src/domain/scanners'
+import { semanticLevel, nextSemanticZoom } from '../src/domain/semantic-zoom'
+import { clusterExplorerItems, filterExplorerItems, minimapBounds } from '../src/domain/explorer-controls'
+import { assertPrivateSnapshot, exportSnapshot } from '../src/domain/snapshot'
+
+describe('M1 graph foundation', () => {
+  it('round-trips the canonical schema and preserves stable identities', () => {
+    const graph = createCanonicalGraph({ project: { id: createGraphId('project', 'loop', ''), name: 'loop' }, nodes: [{ id: createGraphId('file', 'loop', 'src/main.ts'), kind: 'file', name: 'main.ts', path: 'src/main.ts', ports: [{ id: 'out', direction: 'out', contract: 'command' }] }], edges: [], provenance: { source: 'fixture', generatedAt: '2025-01-01T00:00:00.000Z' }, evidence: [] })
+    const copy = parseGraphSnapshot(serializeGraph(graph)); expect(copy).toEqual(graph); expect(copy.nodes[0].id).toBe(createGraphId('file', 'loop', 'src/main.ts'))
+  })
+  it('migrates a legacy flat file snapshot', () => { const graph = migrateGraph({ version: 0, project: { name: 'old' }, files: [{ path: 'app.py' }] }); expect(graph.schema).toBe('1.0'); expect(graph.nodes[0]).toMatchObject({ kind: 'file', path: 'app.py' }) })
+  it('returns confidence and reason for default and override classification', () => { expect(classify('src/application/run.py')).toMatchObject({ layer: 'application', confidence: expect.any(Number), reason: expect.stringContaining('application') }); expect(classify('weird.txt', { layers: [{ id: 'custom', pattern: /weird/, layer: 'docs', confidence: 1, reason: 'fixture override' }] })).toMatchObject({ layer: 'docs', matchedRule: 'custom' }) })
+  it('scans Python and TypeScript symbols, imports and evidence without crashing', () => { const py = scanPython('app.py', 'from domain.task import Task\nclass Runner:\n  def run(self): pass'); expect(py.nodes.map((node) => node.name)).toEqual(expect.arrayContaining(['Runner', 'run'])); expect(py.edges[0]).toMatchObject({ type: 'import', label: 'domain.task', evidence: [expect.objectContaining({ source: 'static', location: { path: 'app.py', line: 1 } })] }); const ts = scanTypeScript('main.ts', `import { run } from './run'\nclass App {}\nfunction start() {}`); expect(ts.nodes.map((node) => node.name)).toEqual(expect.arrayContaining(['App', 'start'])); expect(ts.edges[0].type).toBe('import') })
+  it('uses hysteresis in semantic zoom and preserves selection', () => { expect(semanticLevel(.1)).toBe(0); expect(semanticLevel(.5)).toBe(2); expect(semanticLevel(.46, 2)).toBe(2); expect(nextSemanticZoom({ level: 1, breadcrumb: ['loop'], selectedId: 'f' }, .8).selectedId).toBe('f') })
+  it('filters and clusters large explorer lists deterministically', () => { const items = [{ id: '1', name: 'run.py', path: 'app/run.py', layer: 'application', kind: 'use-case' }, { id: '2', name: 'Task', path: 'domain/task.py', layer: 'domain', kind: 'entity' }]; expect(filterExplorerItems(items, { query: 'run' })).toHaveLength(1); expect(clusterExplorerItems(items).map((item) => item.key)).toEqual(['app', 'domain']); expect(minimapBounds([{ x: 2, z: -1 }, { x: 4, z: 3 }])).toEqual({ minX: 2, maxX: 4, minZ: -1, maxZ: 3 }) })
+  it('exports provenance and rejects secret-like snapshots', () => { const graph = createCanonicalGraph({ project: { id: 'p', name: 'p' }, nodes: [], edges: [], provenance: { source: 'local', generatedAt: '2025-01-01' }, evidence: [] }); const raw = JSON.parse(exportSnapshot(graph, '2025-02-01')); expect(raw).toMatchObject({ format: 'simplicio-canvas-snapshot', version: 1, provenance: graph.provenance }); expect(() => assertPrivateSnapshot({ ...raw, graph: { ...graph, project: { ...graph.project, name: 'apiKey' } } })).toThrow(/secret/i) })
+})
