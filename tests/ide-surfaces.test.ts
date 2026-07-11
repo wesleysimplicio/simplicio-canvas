@@ -10,6 +10,7 @@ import { IncrementalEditorController, findInEditor, syntaxDiagnostics } from '..
 import { WorkspaceCrudController } from '../src/domain/workspace-crud'
 import { createPublisherReceipt, verifyArtifact, type DistributionArtifact } from '../src/domain/distribution-contract'
 import { createSigningProvider } from '../src/domain/signing-provider'
+import { choosePwaUpdate, hostCapabilities, validatePwaRelease } from '../src/domain/pwa-lifecycle'
 import { boundRunOutput, createRunSession, finishRunSession, restartRunSession, startRunSession, stopRunSession, validateLaunchConfiguration } from '../src/domain/run-debug'
 
 const graph = buildArchitectureGraph(['src/a.ts', 'src/b.ts', 'tests/a.test.ts'])
@@ -124,5 +125,10 @@ describe('IDE surface contracts', () => {
   it('delegates signing and verification to an injected Cosign/Minisign runner', async () => {
     const calls: string[][] = []; const provider = createSigningProvider({ tool: 'cosign', keyRef: 'env://COSIGN_KEY', publicKeyRef: 'release.pub' }, { run: async (command, args, input) => { calls.push([command, ...args]); expect(input).toContain('payload'); return { exitCode: 0, stdout: calls.length === 1 ? 'real-signature-from-ci' : '', stderr: '' } } })
     expect(await provider.sign('payload')).toBe('real-signature-from-ci'); expect(await provider.verify('payload', 'real-signature-from-ci')).toBe(true); expect(calls[0]).toContain('sign-blob'); expect(calls[1]).toContain('verify-blob')
+  })
+
+  it('keeps browser capabilities read-only and chooses verified PWA rollback/update', () => {
+    expect(hostCapabilities('browser')).toMatchObject({ filesystem: false, process: false, git: false, sourceUpload: false }); const current = { version: '2.0.0', cacheName: 'simplicio-canvas-v1', integrity: 'a'.repeat(64) }; const candidate = { version: '2.1.0', cacheName: 'simplicio-canvas-v2', integrity: 'b'.repeat(64) }
+    expect(validatePwaRelease(candidate)).toEqual([]); expect(choosePwaUpdate(current, candidate, 'healthy').action).toBe('activate'); expect(choosePwaUpdate(current, candidate, 'failed').action).toBe('rollback'); expect(choosePwaUpdate(current, candidate, 'unknown').action).toBe('keep')
   })
 })
