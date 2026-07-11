@@ -12,6 +12,7 @@ The Canvas keeps maturity features renderer-independent and local-first. The con
 | `onboarding.ts` | First-run steps are local, skippable/resettable state; no analytics are required to progress. | `tests/maturity-contracts.test.ts` |
 | `dependency-intelligence.ts` | Dependency reports declare direct/transitive scope and support offline severity classification. Network lookup is not implicit. | `tests/maturity-contracts.test.ts` |
 | `telemetry.ts` | Local SLO budgets (load, scan, interaction and frame time) are evaluated without sending events. Consent is denied by default; users can export or clear local diagnostics. | `tests/maturity-contracts.test.ts` |
+| `workspace-cache.ts` | Cache keys bind repository revision, configuration and schema. Atomic adapters, checksums and repair diagnostics prevent silent restore of partial or stale snapshots. | `tests/maturity-contracts.test.ts` |
 
 These are integration-ready foundations, not claims that the browser can execute processes, access private repositories, ingest production telemetry or mutate source. Those capabilities require an explicit trusted-host adapter and remain separate follow-up work.
 

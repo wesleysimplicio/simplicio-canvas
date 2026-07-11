@@ -7,6 +7,7 @@ import { createWorkspaceSnapshot, recoverWorkspace, validateWorkspaceSnapshot } 
 import { ONBOARDING_STEPS, nextOnboarding, resetOnboarding, type OnboardingProgress } from '../src/domain/onboarding'
 import { analyzeDependencies, dependencySeverity, validateDependencyReport } from '../src/domain/dependency-intelligence'
 import { buildArchitectureGraph } from '../src/domain/architecture'
+import { createCacheKey, inspectWorkspaceCache, MemoryCacheAdapter, repairWorkspaceCache, saveWorkspaceCache } from '../src/domain/workspace-cache'
 
 describe('privacy-preserving telemetry', () => {
   it('rejects source and identity fields and is consent gated', () => {
@@ -53,6 +54,13 @@ describe('multi-repository and recovery contracts', () => {
     const corrupt = { ...snapshot, revision: 'changed' }
     expect(recoverWorkspace(corrupt, 'restore').status).toBe('inspect')
     expect(recoverWorkspace(snapshot, 'restore').status).toBe('restore')
+    const adapter = new MemoryCacheAdapter(); const key = saveWorkspaceCache(adapter, { repository: 'loop', revision: 'rev', configuration: 'default' }, snapshot, 'now')
+    expect(createCacheKey({ repository: 'loop', revision: 'rev', configuration: 'default' })).toBe(key)
+    expect(inspectWorkspaceCache(adapter, key, 'rev').status).toBe('valid')
+    expect(inspectWorkspaceCache(adapter, key, 'other').status).toBe('stale-revision')
+    adapter.failNextWrite = true; expect(() => saveWorkspaceCache(adapter, { repository: 'loop', revision: 'next', configuration: 'default' }, snapshot)).toThrow(/interrupted/)
+    const raw = adapter.read(key)!; adapter.writeAtomic(key, raw.slice(0, 12)); expect(inspectWorkspaceCache(adapter, key).status).toBe('corrupt')
+    expect(repairWorkspaceCache(adapter, key).status).toBe('corrupt'); expect(inspectWorkspaceCache(adapter, key).status).toBe('missing')
   })
 })
 
