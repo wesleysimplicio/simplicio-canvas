@@ -14,3 +14,8 @@ export function diffGraphs(before: CanonicalGraph, after: CanonicalGraph, from =
   return { schema: 'simplicio-graph-diff/v1', from, to, changes: [...diffEntities(before.nodes, after.nodes, 'node'), ...diffEntities(before.edges, after.edges, 'edge')], deterministic: true }
 }
 export function serializeGraphDiff(diff: GraphRevisionDiff): string { return JSON.stringify(diff, null, 2) }
+export function replayGraphDiff<T extends CanonicalGraph>(before: T, diff: GraphRevisionDiff, progress = 1): T {
+  const ratio = Math.max(0, Math.min(1, progress)); const limit = Math.floor(diff.changes.length * ratio); const nodes = [...before.nodes]; const edges = [...before.edges]
+  for (const change of diff.changes.slice(0, limit)) { const list = change.entity === 'node' ? nodes : edges; const index = list.findIndex((item) => item.id === change.id); if (change.kind === 'removed' && index >= 0) list.splice(index, 1); if (change.kind === 'added' && change.after) list.push(change.after as never); if (change.kind === 'changed' && change.after && index >= 0) list[index] = change.after as never }
+  return { ...before, nodes, edges, provenance: { ...before.provenance, snapshot: ratio >= 1 ? diff.to : `replay:${ratio}` } }
+}

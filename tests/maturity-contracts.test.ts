@@ -2,13 +2,13 @@ import { describe, expect, it } from 'vitest'
 import { createTelemetryEvent, deleteTelemetry, evaluateSlo, exportSloReport, exportTelemetry, recordTelemetry, validateTelemetryProperties } from '../src/domain/telemetry'
 import { correlateRuntimeTrace, importRuntimeTrace, runtimeEdges, validateRuntimeTrace } from '../src/domain/runtime-trace'
 import { applyPolicyBaseline, createPolicyBaseline, evaluatePolicy, newPolicyFindings, parsePolicyBaseline, policyToSarif } from '../src/domain/architecture-policy'
-import { validateWorkspaceManifest } from '../src/domain/multi-repo'
+import { SIMPLICIO_LANDSCAPE_FIXTURE, summarizeWorkspaceLandscape, validateWorkspaceManifest } from '../src/domain/multi-repo'
 import { createWorkspaceSnapshot, recoverWorkspace, validateWorkspaceSnapshot } from '../src/domain/workspace-recovery'
 import { ONBOARDING_STEPS, nextOnboarding, resetOnboarding, type OnboardingProgress } from '../src/domain/onboarding'
 import { analyzeDependencies, dependencySeverity, enrichDependencyReport, validateDependencyReport } from '../src/domain/dependency-intelligence'
 import { buildArchitectureGraph } from '../src/domain/architecture'
 import { createCacheKey, inspectWorkspaceCache, LocalStorageCacheAdapter, MemoryCacheAdapter, repairWorkspaceCache, saveWorkspaceCache } from '../src/domain/workspace-cache'
-import { diffGraphs, serializeGraphDiff } from '../src/domain/graph-diff'
+import { diffGraphs, replayGraphDiff, serializeGraphDiff } from '../src/domain/graph-diff'
 
 describe('privacy-preserving telemetry', () => {
   it('rejects source and identity fields and is consent gated', () => {
@@ -51,13 +51,14 @@ describe('graph revision diff', () => {
   it('classifies deterministic node/edge changes and exports evidence', () => {
     const base = { schema: '1.0', project: { id: 'p', name: 'p' }, nodes: [{ id: 'n1', kind: 'file', name: 'a' }], edges: [], provenance: { source: 'git', generatedAt: 'r1', snapshot: 'r1' }, evidence: [] } as any
     const next = { ...base, nodes: [...base.nodes, { id: 'n2', kind: 'file', name: 'b' }], provenance: { ...base.provenance, generatedAt: 'r2', snapshot: 'r2' } }
-    const diff = diffGraphs(base, next); expect(diff.changes).toMatchObject([{ kind: 'added', entity: 'node', id: 'n2' }]); expect(JSON.parse(serializeGraphDiff(diff)).schema).toBe('simplicio-graph-diff/v1')
+    const diff = diffGraphs(base, next); expect(diff.changes).toMatchObject([{ kind: 'added', entity: 'node', id: 'n2' }]); expect(replayGraphDiff(base, diff, 1).nodes).toHaveLength(2); expect(JSON.parse(serializeGraphDiff(diff)).schema).toBe('simplicio-graph-diff/v1')
   })
 })
 
 describe('multi-repository and recovery contracts', () => {
   it('requires stable revisions and catches unknown edge repositories', () => {
     expect(validateWorkspaceManifest({ version: 1, repositories: [{ id: 'a', name: 'a', root: '.', revision: 'abc', dirty: false, access: 'available' }], edges: [{ id: 'x', fromRepo: 'a', toRepo: 'missing', type: 'api', evidence: [] }] })).toContain('edge references unavailable repository: x')
+    expect(validateWorkspaceManifest(SIMPLICIO_LANDSCAPE_FIXTURE)).toEqual([]); const landscape = summarizeWorkspaceLandscape(SIMPLICIO_LANDSCAPE_FIXTURE); expect(landscape.repositories).toHaveLength(4); expect(landscape.available).toBe(2); expect(landscape.unavailable).toBe(2); expect(landscape.edges).toHaveLength(3)
   })
   it('detects corruption and only restores valid snapshots', () => {
     const graph = { schema: '1.0', project: { id: 'p', name: 'p' }, nodes: [], edges: [], provenance: { source: 'test', generatedAt: 'now' }, evidence: [] } as never
