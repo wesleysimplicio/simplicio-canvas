@@ -6,6 +6,7 @@ import { searchCommands, normalizePreferences, DEFAULT_PREFERENCES } from '../sr
 import { createReadOnlySourceControlAdapter, createSourceControlController, validateSourceControlAction, shouldRequirePullRequest, type SourceControlSnapshot } from '../src/domain/source-control'
 import { BrowserTerminalAdapter, GuardedProcessAdapter, TERMINAL_CONFIRMATION, validateTerminalRequest } from '../src/domain/terminal-adapter'
 import { LazyEditorHost } from '../src/domain/lazy-editor'
+import { IncrementalEditorController, findInEditor, syntaxDiagnostics } from '../src/domain/editor-services'
 import { boundRunOutput, createRunSession, finishRunSession, restartRunSession, startRunSession, stopRunSession, validateLaunchConfiguration } from '../src/domain/run-debug'
 
 const graph = buildArchitectureGraph(['src/a.ts', 'src/b.ts', 'tests/a.test.ts'])
@@ -68,6 +69,13 @@ describe('IDE surface contracts', () => {
     let loads = 0; let value = ''; let location = ''; let disposed = false
     const host = new LazyEditorHost(async () => { loads += 1; return { setValue: (next: string) => { value = next }, getValue: () => value, reveal: (line, column) => { location = `${line}:${column}` }, dispose: () => { disposed = true } } })
     const first = await host.open('one', 0, 0); const second = await host.open('two', 4, 7); expect(first).toBe(second); expect(loads).toBe(1); expect(value).toBe('two'); expect(location).toBe('4:7'); expect(host.getState().status).toBe('ready'); host.dispose(); expect(disposed).toBe(true)
+  })
+
+  it('provides diagnostics, find matches and incremental reparse with dirty-close protection', async () => {
+    expect(syntaxDiagnostics('function run() {\n return (1\n}', 'TypeScript').map((item) => item.severity)).toContain('error')
+    expect(findInEditor('Task task\ntask', 'task', { wholeWord: true }).map((match) => `${match.line}:${match.column}`)).toEqual(['1:1', '1:6', '2:1'])
+    const reparsed: string[] = []; const controller = new IncrementalEditorController({ tabs: [] }, async (path, content) => { reparsed.push(path); return { path, content, diagnostics: syntaxDiagnostics(content, 'TypeScript'), changedPaths: [path] } })
+    const tab = controller.open({ path: 'src/a.ts', content: 'const a = 1', language: 'TypeScript' }); controller.update(tab.id, 'const a = (1'); expect(controller.close(tab.id)).toBe(false); const result = await controller.save(tab.id); expect(result.changedPaths).toEqual(['src/a.ts']); expect(reparsed).toEqual(['src/a.ts']); expect(controller.getState().tabs[0].dirty).toBe(false); expect(controller.close(tab.id)).toBe(true)
   })
 
   it('validates launch profiles and exposes a confirmation gate', () => {
