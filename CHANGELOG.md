@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.2.0 — 2026-07-11
+
+- Add installable offline-first PWA manifest and versioned service worker cache.
+- Add trusted Explorer filesystem CRUD with explicit delete confirmation and undo receipts.
+- Add multi-repository landscape, onboarding recovery states and host packaging validation.
+
 ## 2.1.0 — 2026-07-11
 
 - Add replayable graph revision transitions and safe edge-reversal previews.
