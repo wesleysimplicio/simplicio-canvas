@@ -113,7 +113,8 @@ document.querySelector('#onboarding-close')!.addEventListener('click', () => { o
 renderOnboarding()
 function closePopup(popup: HTMLElement | null) {
   if (!popup) return false
-  popup.hidden = true
+  if (popup.id === 'inspector') popup.classList.remove('open')
+  else popup.hidden = true
   if (popup.id === 'onboarding') { onboarding = { ...onboarding, state: 'skipped' }; persistOnboarding() }
   return true
 }
@@ -130,6 +131,11 @@ const handlePopupClose = (event: Event) => {
 // keyboard activation and assistive technology.
 document.addEventListener('pointerdown', handlePopupClose, true)
 document.addEventListener('click', handlePopupClose, true)
+// Close affordances must work on pointerdown as well as click. This avoids a
+// canvas/overlay gesture consuming the click before the modal receives it.
+document.querySelector('#github-close')?.addEventListener('pointerdown', (event) => { event.preventDefault(); event.stopPropagation(); closePopup(document.querySelector('#github-dialog')) }, true)
+document.querySelector('#help-close')?.addEventListener('pointerdown', (event) => { event.preventDefault(); event.stopPropagation(); closePopup(document.querySelector('#help')) }, true)
+document.querySelector('#inspector-close')?.addEventListener('pointerdown', (event) => { event.preventDefault(); event.stopPropagation(); closePopup(document.querySelector('#inspector')) }, true)
 addEventListener('keydown', (event) => {
   if (event.key !== 'Escape' && event.key !== 'Esc') return
   const palette = document.querySelector<HTMLElement>('#command-palette')
