@@ -1,0 +1,13 @@
+{
+  "name": "simplicio-canvas",
+  "displayName": "Simplicio Canvas",
+  "description": "Visualize a trusted workspace as connected software pieces.",
+  "version": "0.1.0",
+  "publisher": "simplicio",
+  "license": "MIT",
+  "engines": { "vscode": "^1.85.0" },
+  "categories": ["Other", "Visualization"],
+  "main": "./dist/extension.js",
+  "activationEvents": ["onCommand:simplicioCanvas.open"],
+  "contributes": { "commands": [{ "command": "simplicioCanvas.open", "title": "Simplicio Canvas: Open Workspace" }] }
+}

@@ -10,6 +10,7 @@ import { AuditLog } from '../src/domain/audit-log'
 import { canApply } from '../src/domain/workspace-security'
 import { createExtensionApplyService } from '../src/domain/extension-apply'
 import { verifyTransformation } from '../src/domain/transformation-eval'
+import { activate } from '../extension/src/extension'
 
 const graph = buildArchitectureGraph(['src/ui/app.ts', 'src/application/run.ts', 'src/domain/task.ts', 'tests/task.test.ts'])
 
@@ -26,6 +27,11 @@ describe('M3 canvas and extension contracts', () => {
   it('validates extension capabilities and explicit permissions', () => {
     expect(validateCapabilityManifest({ id: 'mapper', version: '1.0.0', capabilities: ['analyzer'], permissions: ['read-workspace'] })).toEqual([])
     expect(validateCapabilityManifest({ id: 'Bad Name', version: '1', capabilities: [], permissions: ['write-workspace'] })).toHaveLength(4)
+  })
+  it('registers one host command and disposes it on host deactivation', () => {
+    let disposed = false; let deactivated: (() => void) | undefined; let opened = 0
+    const extension = activate({ registerCommand: (command, handler) => { expect(command).toBe('simplicioCanvas.open'); handler(); return { dispose: () => { disposed = true } } }, onDeactivate: (listener) => { deactivated = listener } }, () => { opened += 1 })
+    expect(opened).toBe(1); deactivated?.(); expect(disposed).toBe(true); extension.dispose(); expect(disposed).toBe(true)
   })
 
   it('validates typed extension messages and rejects malformed payloads', () => {
