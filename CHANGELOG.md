@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.6.0 — 2026-07-11
+
+- Add release artifact signature/checksum verification contracts and publisher receipts.
+- Add release-readiness scorecard for all seven maturity lanes.
+- Add ephemeral local Mapper evidence collection with metadata-only output.
+
 ## 2.5.0 — 2026-07-11
 
 - Add concrete host process streaming with abort/exit receipts.
