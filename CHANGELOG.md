@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.0.0 — 2026-07-11
+
+- Add real InstancedMesh performance benchmarking and nightly compatibility/render CI.
+- Add persistent, conflict-aware workspace preferences and shortcut settings.
+- Add architecture policy baselines and explicit SARIF suppression behavior.
+- Add safe edge-reversal preview proposals with cycle and duplicate validation.
+
 ## 1.9.0 — 2026-07-11
 
 - Add compatibility-matrix CI metadata for Python, TypeScript, .NET, Java and polyglot repositories.
