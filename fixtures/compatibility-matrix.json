@@ -3,10 +3,10 @@
   "version": 1,
   "repositories": [
     { "id": "simplicio-loop", "repository": "wesleysimplicio/simplicio-loop", "stack": "Python", "size": "small", "status": "verified", "sourcePolicy": "metadata-only" },
-    { "id": "requests", "repository": "psf/requests", "stack": "Python", "size": "medium", "status": "partial", "sourcePolicy": "metadata-only" },
-    { "id": "vite", "repository": "vitejs/vite", "stack": "TypeScript", "size": "large", "status": "partial", "sourcePolicy": "metadata-only" },
-    { "id": "dotnet-runtime", "repository": "dotnet/runtime", "stack": ".NET", "size": "large", "status": "planned", "sourcePolicy": "metadata-only" },
-    { "id": "spring-petclinic", "repository": "spring-projects/spring-petclinic", "stack": "Java", "size": "small", "status": "planned", "sourcePolicy": "metadata-only" },
-    { "id": "free-programming-books", "repository": "EbookFoundation/free-programming-books", "stack": "polyglot", "size": "large", "status": "planned", "sourcePolicy": "metadata-only" }
+    { "id": "requests", "repository": "psf/requests", "stack": "Python", "size": "medium", "status": "verified", "sourcePolicy": "metadata-only" },
+    { "id": "vite", "repository": "vitejs/vite", "stack": "TypeScript", "size": "large", "status": "verified", "sourcePolicy": "metadata-only" },
+    { "id": "dotnet-runtime", "repository": "dotnet/runtime", "stack": ".NET", "size": "large", "status": "partial", "support": "unsupported-at-budget", "reason": "Mapper scan exceeded the 600-second large-repository budget; no support claim is made.", "sourcePolicy": "metadata-only" },
+    { "id": "spring-petclinic", "repository": "spring-projects/spring-petclinic", "stack": "Java", "size": "small", "status": "verified", "sourcePolicy": "metadata-only" },
+    { "id": "free-programming-books", "repository": "EbookFoundation/free-programming-books", "stack": "polyglot", "size": "large", "status": "verified", "sourcePolicy": "metadata-only" }
   ]
 }

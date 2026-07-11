@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.9.0 — 2026-07-11
+
+- Record five verified real Mapper compatibility captures and one explicit .NET budget limitation.
+- Add sanitized evidence for deterministic scans, diagnostics, memory estimates and renderer screenshots.
+- Keep the public compatibility matrix at five verified stacks plus one partial capability.
+
 ## 2.8.0 — 2026-07-11
 
 - Add signed-extension release workflow with Cosign/Minisign fail-closed verification.
