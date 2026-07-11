@@ -76,7 +76,7 @@ function applyLocale(locale: Locale) {
   const footer = document.querySelector('footer > span:last-child'); if (footer) footer.textContent = t(locale, 'localFirst')
   const selectionTitle = document.querySelector('#selection h2'); if (selectionTitle) selectionTitle.textContent = t(locale, 'selectPiece')
   const textMap: Record<string, string> = {
-    '.brand small': 'subtitle', '#fallback-label': 'readOnly', '#locale-label': 'language',
+    '.brand small': 'subtitle',
     '#account-button': 'account', '#settings-button': 'settings', '.workspace-root small': 'snapshot', '.workspace-root .empty': 'noFolder',
     '.stage-label span': 'architecture', '#edge-import-label': 'importCode', '#edge-flow-label': 'documentedFlow',
     '#insights-panel [data-policy]': 'policyWaiting', '#insights-panel [data-dependencies]': 'dependenciesWaiting', '#slo-panel > span': 'diagnosticsOff',
