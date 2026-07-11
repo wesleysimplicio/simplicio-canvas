@@ -4,7 +4,7 @@ import { importRuntimeTrace, runtimeEdges, validateRuntimeTrace } from '../src/d
 import { evaluatePolicy, policyToSarif } from '../src/domain/architecture-policy'
 import { validateWorkspaceManifest } from '../src/domain/multi-repo'
 import { createWorkspaceSnapshot, recoverWorkspace, validateWorkspaceSnapshot } from '../src/domain/workspace-recovery'
-import { ONBOARDING_STEPS, nextOnboarding, resetOnboarding } from '../src/domain/onboarding'
+import { ONBOARDING_STEPS, nextOnboarding, resetOnboarding, type OnboardingProgress } from '../src/domain/onboarding'
 import { dependencySeverity, validateDependencyReport } from '../src/domain/dependency-intelligence'
 import { buildArchitectureGraph } from '../src/domain/architecture'
 
@@ -25,8 +25,8 @@ describe('runtime trace contract', () => {
   it('imports redacted spans and creates distinct runtime edges', () => {
     const value = { schema: 'simplicio-runtime-trace/v1', importedAt: '2025-01-01T00:00:00Z', redacted: true, spans: [{ traceId: 't', spanId: 's', from: 'a', to: 'b', startedAt: '2025-01-01T00:00:00Z', durationMs: 4, count: 2, environment: 'test', attributes: { userEmail: 'never' } }] }
     expect(validateRuntimeTrace(value)).toContain('spans[0] contains forbidden attribute: userEmail')
-    delete value.spans[0].attributes
-    const trace = importRuntimeTrace(value)
+    const sanitized = { ...value, spans: [{ ...value.spans[0], attributes: undefined }] }
+    const trace = importRuntimeTrace(sanitized)
     expect(runtimeEdges(trace)[0].id).toBe('runtime:t:s')
   })
 })
@@ -57,7 +57,7 @@ describe('multi-repository and recovery contracts', () => {
 describe('onboarding and dependency contracts', () => {
   it('progresses and resets the guided tour', () => {
     expect(ONBOARDING_STEPS).toHaveLength(4)
-    let progress = { ...resetOnboarding(), state: 'active' as const }
+    let progress: OnboardingProgress = { ...resetOnboarding(), state: 'active' }
     for (let i = 0; i < ONBOARDING_STEPS.length; i += 1) progress = nextOnboarding(progress)
     expect(progress.state).toBe('completed')
   })
