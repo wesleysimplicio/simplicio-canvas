@@ -3,7 +3,7 @@ import { buildArchitectureGraph } from '../src/domain/architecture'
 import { buildExplorerTree, closeEditorTab, createEditorState, openEditorFile, updateEditorContent, canCloseEditorTab, validateWorkspaceMutation } from '../src/domain/editor-workspace'
 import { proposeEdgeConnection, proposeEdgeReversal } from '../src/domain/edge-refactor'
 import { searchCommands, normalizePreferences, DEFAULT_PREFERENCES } from '../src/domain/workspace-preferences'
-import { validateSourceControlAction, shouldRequirePullRequest, type SourceControlSnapshot } from '../src/domain/source-control'
+import { createReadOnlySourceControlAdapter, createSourceControlController, validateSourceControlAction, shouldRequirePullRequest, type SourceControlSnapshot } from '../src/domain/source-control'
 import { BrowserTerminalAdapter, TERMINAL_CONFIRMATION, validateTerminalRequest } from '../src/domain/terminal-adapter'
 import { createRunSession, startRunSession, validateLaunchConfiguration } from '../src/domain/run-debug'
 
@@ -39,6 +39,15 @@ describe('IDE surface contracts', () => {
   it('keeps source control actions trusted and main protection visible', () => {
     expect(validateSourceControlAction({ trusted: false, root: '/workspace' }, '/workspace', ['/workspace/a.ts'], 'x')).toContain('workspace trust is required')
     const snapshot: SourceControlSnapshot = { branch: 'main', ahead: 1, behind: 0, files: [], mainProtected: true, provider: 'local' }; expect(shouldRequirePullRequest(snapshot)).toBe(true)
+  })
+
+  it('returns auditable receipts and blocks direct push to protected main', async () => {
+    const snapshot: SourceControlSnapshot = { branch: 'main', ahead: 1, behind: 0, files: [{ path: '/workspace/a.ts', state: 'modified', staged: false, diff: '-a\n+b' }], mainProtected: true, provider: 'local' }
+    const controller = createSourceControlController(createReadOnlySourceControlAdapter(snapshot), trust, '/workspace')
+    expect((await controller.refresh()).branch).toBe('main')
+    expect((await controller.stage(['/workspace/a.ts'])).accepted).toBe(true)
+    const commit = await controller.commit(['/workspace/a.ts'], 'update'); expect(commit.accepted).toBe(false); expect(commit.detail).toContain('Pull Request')
+    const push = await controller.push(); expect(push.accepted).toBe(false); expect(push.detail).toContain('Pull Request'); expect(push.id).toMatch(/^sc-push-/)
   })
 
   it('requires explicit terminal confirmation and never starts a browser process', async () => {
