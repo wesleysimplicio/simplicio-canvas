@@ -36,6 +36,7 @@ if (__DEMO_MODE__) {
     const target = event.target instanceof Element ? event.target : null
     if (target?.closest('#folder, #mapper-file')) { event.preventDefault(); event.stopImmediatePropagation() }
   }, true)
+  document.addEventListener('submit', (event) => { event.preventDefault(); event.stopImmediatePropagation() }, true)
 }
 
 let currentLocale: Locale = (localStorage.getItem('simplicio-canvas.locale') as Locale | null) ?? 'pt-BR'
