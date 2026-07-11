@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.3.0 — 2026-07-11
+
+- Add deterministic `verify:release` gate covering tests, web build, extension build and PWA verification.
+- Add reproducible safe edge reconnection proposals.
+- Add graph timeline replay and validated VSIX packaging workflow.
+
 ## 2.2.1 — 2026-07-11
 
 - Fix global `Escape` handling so onboarding, dialogs, command palette, help and inspector popups close reliably.

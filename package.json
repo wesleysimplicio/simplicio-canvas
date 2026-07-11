@@ -1,7 +1,7 @@
 {
   "name": "simplicio-canvas",
   "private": true,
-  "version": "2.2.1",
+  "version": "2.3.0",
   "type": "module",
   "scripts": {
     "dev": "vite --host 127.0.0.1",
@@ -19,7 +19,8 @@
     "test:compatibility": "vitest run tests/compatibility-matrix.test.ts",
     "benchmark:webgl": "vitest run tests/instancing-benchmark.test.ts",
     "test:onboarding": "vitest run tests/onboarding-usability.test.ts",
-    "verify:pwa": "node scripts/verify-pwa.mjs"
+    "verify:pwa": "node scripts/verify-pwa.mjs",
+    "verify:release": "node scripts/verify-release.mjs"
   },
   "dependencies": { "three": "^0.178.0" },
   "devDependencies": {
