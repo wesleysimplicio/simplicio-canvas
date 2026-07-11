@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.3.1 — 2026-07-11
+
+- Add visible `×` close controls to onboarding and command palette pop-ups.
+
 ## 2.3.0 — 2026-07-11
 
 - Add deterministic `verify:release` gate covering tests, web build, extension build and PWA verification.
