@@ -21,4 +21,4 @@ The deployment target is `/public_html/simplicio_canvas`. Never add FTP credenti
 
 Live demo (read-only): <https://simpleti.com.br/simplicio_canvas/>
 
-The public deployment contains only the bundled `wesleysimplicio/simplicio-loop` snapshot. Import controls, GitHub/network import, source editing, saving, process execution and piece dragging are disabled at build time and at runtime. The public PHP import bridge is intentionally not deployed.
+The public deployment contains only the bundled `wesleysimplicio/simplicio-loop` snapshot. Import controls, GitHub/network import, source editing, saving, process execution and piece dragging are disabled at build time and at runtime. The public PHP import bridge is intentionally not deployed, and `/api/github/import` must not be treated as a public capability.

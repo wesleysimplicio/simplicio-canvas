@@ -1,4 +1,5 @@
 export type LayerId = 'presentation' | 'application' | 'domain' | 'infrastructure' | 'tests' | 'docs' | 'config'
+import { stableGraphId } from './graph-schema'
 export type PieceKind = 'screen' | 'controller' | 'use-case' | 'service' | 'entity' | 'repository' | 'adapter' | 'test' | 'config' | 'module'
 
 export const LAYERS: Record<LayerId, { label: string; color: string; order: number; role: string }> = {
@@ -55,7 +56,7 @@ export function buildArchitectureGraph(paths: string[]): ArchitectureGraph {
   const counters = new Map<LayerId, number>()
   const nodes = visible.map((path, index) => {
     const layer = classifyPath(path); const count = counters.get(layer) ?? 0; counters.set(layer, count + 1)
-    return { id: `n-${index}-${path.replace(/[^a-z0-9]/gi, '-')}`, path, name: path.split('/').pop() ?? path, layer, kind: classifyPiece(path), x: LAYERS[layer].order * 5.2, z: count * 2.4 - 6 }
+    return { id: stableGraphId('file', path), path, name: path.split('/').pop() ?? path, layer, kind: classifyPiece(path), x: LAYERS[layer].order * 5.2, z: count * 2.4 - 6 }
   })
   const edges: ArchitectureEdge[] = []
   for (let i = 0; i < nodes.length - 1; i++) {

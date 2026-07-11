@@ -33,9 +33,9 @@ Simplicio Canvas is an early local-first prototype for visual programming. Its d
 - **Pieces** represent responsibilities such as screen, service, entity, repository, adapter, and test.
 - **Curves** represent real internal imports detected from source files.
 - **Click** a file to inspect language, imports, reverse imports, and its source in a read-only terminal.
-- **Drag** a piece to rearrange the architecture view without changing the source tree.
+- **Drag** a piece in the local build to rearrange the architecture view without changing the source tree. The hosted demo is intentionally read-only.
 
-The browser reads files only in local memory. It never uploads project contents.
+The hosted demo reads only its bundled example. In the local build, selected folders are analyzed in browser memory; GitHub imports use the guarded local bridge or bounded public API fallback. Source contents are not uploaded to a Simplicio service.
 
 ## 🚀 Run locally
 
@@ -46,7 +46,7 @@ npm install
 npm run dev
 ```
 
-Open the local URL and choose either:
+Open the local URL and choose either (the public URL intentionally exposes neither control):
 
 - **Open folder** — authorize a folder already on the machine.
 - **GitHub** — enter a public `owner/repository`; the guarded local Vite bridge performs a shallow clone under `.simplicio/workspaces`, attempts `simplicio-mapper`, and the browser has a public-API fallback when the local bridge is unavailable.

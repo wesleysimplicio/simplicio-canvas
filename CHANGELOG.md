@@ -13,4 +13,4 @@ Simplicio Canvas is now a usable local-first architecture explorer:
 - Use the responsive phone, tablet and desktop layouts.
 - Publish a locked read-only showcase at the public URL; the full import/edit workflow remains available only in the local developer build.
 
-Validation: 55 automated tests, production build, public HTTPS smoke check and HostGator FTP deployment.
+Validation: 55 automated tests, interactive production build, read-only demo build, public HTTPS smoke check and HostGator FTP deployment. The hosted URL is a showcase only; local development retains the import workflow.
