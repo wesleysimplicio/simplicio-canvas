@@ -8,7 +8,7 @@ describe('Canvas UI locales', () => {
   })
 
   it('keeps future locales disabled while translating a core label', () => {
-    expect(ALL_LOCALES.filter((locale) => !ACTIVE_LOCALES.includes(locale.code))).toHaveLength(11)
+    expect(ALL_LOCALES.filter((locale) => !ACTIVE_LOCALES.some((active) => active === locale.code))).toHaveLength(11)
     expect(localeLabel('zh-CN')).toBe('简体中文')
     expect(t('pt-BR', 'openFolder')).toBe('ABRIR PASTA')
     expect(t('es', 'openFolder')).toBe('ABRIR CARPETA')
