@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.8.0 — 2026-07-11
+
+- Add signed-extension release workflow with Cosign/Minisign fail-closed verification.
+- Add runtime asset and cold-start budget enforcement.
+- Record sanitized multi-stack Mapper evidence with privacy and determinism assertions.
+
 ## 2.7.0 — 2026-07-11
 
 - Harden popup closure across pointer overlays and keep the command palette above onboarding.
