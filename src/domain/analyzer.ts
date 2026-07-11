@@ -2,11 +2,26 @@ export interface SourceFileInput { path: string; content: string; size: number }
 export interface ImportReference { specifier: string; resolvedPath?: string; external: boolean }
 export interface AnalyzedFile extends SourceFileInput { language: string; imports: ImportReference[]; lines: number }
 export interface ProjectConnection { source: string; target: string; specifier: string; external: boolean; type: 'import' }
-export interface ProjectAnalysis { name: string; files: AnalyzedFile[]; connections: ProjectConnection[]; languages: Record<string, number>; skipped: number }
+export interface DocumentedFlow { source: string; target: string; document: string }
+export interface ProjectAnalysis { name: string; files: AnalyzedFile[]; connections: ProjectConnection[]; documentedFlows: DocumentedFlow[]; languages: Record<string, number>; skipped: number }
 
 export function sourceLines(content: string, limit = 300): Array<{ number: number; text: string }> {
   const escape = (value: string) => value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
   return content.split('\n').slice(0, limit).map((text, index) => ({ number: index + 1, text: escape(text) }))
+}
+
+export function extractDocumentedFlows(document: string, content: string): DocumentedFlow[] {
+  const flows: DocumentedFlow[] = []
+  const clean = (value: string) => value.trim().replace(/[\[\]{}"`]/g, '').replace(/^\w+\((.*)\)$/, '$1').trim()
+  for (const line of content.split('\n')) {
+    const parts = line.split(/(?:-->|\s+->\s+|\s+→\s+)/).map(clean).filter(Boolean)
+    if (parts.length < 2 || parts.some((part) => /^(flowchart|sequenceDiagram|graph|subgraph|end)$/i.test(part))) continue
+    for (let index = 0; index < parts.length - 1; index++) {
+      const flow = { source: parts[index], target: parts[index + 1], document }
+      if (!flows.some((item) => item.source === flow.source && item.target === flow.target && item.document === flow.document)) flows.push(flow)
+    }
+  }
+  return flows
 }
 
 const EXTENSIONS: Record<string, string> = {
@@ -64,5 +79,6 @@ export function analyzeProject(name: string, input: SourceFileInput[]): ProjectA
     const imports=extractImports(language,file.content).map((specifier):ImportReference=>{const resolvedPath=resolveImport(file.path,specifier,paths);const external=!resolvedPath;connections.push({source:file.path,target:resolvedPath??specifier,specifier,external,type:'import'});return {specifier,resolvedPath,external}})
     return {...file,language,imports,lines:file.content ? file.content.split('\n').length : 0}
   })
-  return {name,files,connections,languages,skipped:input.length-accepted.length}
+  const documentedFlows = files.filter((file) => /(^|\/)readme[^/]*\.(md|mdx)$/i.test(file.path)).flatMap((file) => extractDocumentedFlows(file.path, file.content))
+  return {name,files,connections,documentedFlows,languages,skipped:input.length-accepted.length}
 }
