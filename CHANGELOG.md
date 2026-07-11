@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.1 — 2026-07-11
+
+- Harden the hosted demo: import controls, GitHub clone dialog and source editing are disabled and hidden at runtime.
+
 ## 1.3.0 — 2026-07-11
 
 - Add a cross-platform, dry-run-first bootstrap receipt for `simplicio-mapper`, `simplicio-loop` and the project skill.

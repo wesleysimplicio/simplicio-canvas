@@ -115,8 +115,12 @@ controls.addEventListener('change',updateSemanticZoom)
 updateSemanticZoom()
 if (__DEMO_MODE__) {
   document.body.classList.add('readonly-demo')
+  document.querySelectorAll<HTMLInputElement | HTMLButtonElement>('#mapper-file, #folder, #open-github, #open-project, #reset, #github-submit').forEach((control) => { control.disabled = true })
+  document.querySelector<HTMLElement>('#import-map-label')?.setAttribute('hidden', 'true')
+  document.querySelector<HTMLElement>('.fallback')?.setAttribute('hidden', 'true')
+  document.querySelector<HTMLElement>('#github-dialog')?.setAttribute('hidden', 'true')
   const selection = document.querySelector('#selection')!
-  const enforceReadonly = () => { selection.querySelectorAll<HTMLTextAreaElement>('textarea').forEach((editor) => { editor.readOnly = !PUBLIC_DEMO_POLICY.canEditSource }); selection.querySelectorAll<HTMLElement>('.editor-actions').forEach((actions) => { actions.hidden = !PUBLIC_DEMO_POLICY.canSaveSource }) }
+  const enforceReadonly = () => { selection.querySelectorAll<HTMLTextAreaElement>('textarea').forEach((editor) => { editor.readOnly = !PUBLIC_DEMO_POLICY.canEditSource; editor.disabled = !PUBLIC_DEMO_POLICY.canEditSource }); selection.querySelectorAll<HTMLElement>('.editor-actions').forEach((actions) => { actions.hidden = !PUBLIC_DEMO_POLICY.canSaveSource }); selection.querySelectorAll<HTMLButtonElement>('#save-source').forEach((button) => { button.disabled = !PUBLIC_DEMO_POLICY.canSaveSource }) }
   new MutationObserver(enforceReadonly).observe(selection, { childList: true }); enforceReadonly()
   if (dragControls) dragControls.enabled = PUBLIC_DEMO_POLICY.canMovePieces
 }
