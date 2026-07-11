@@ -24,3 +24,4 @@ jobs:
       - run: npm run benchmark:render
       - run: npm run benchmark:webgl
       - run: npm run build
+      - run: npm run verify:pwa

@@ -18,7 +18,8 @@
     "benchmark:render": "vitest run tests/render-benchmark.test.ts",
     "test:compatibility": "vitest run tests/compatibility-matrix.test.ts",
     "benchmark:webgl": "vitest run tests/instancing-benchmark.test.ts",
-    "test:onboarding": "vitest run tests/onboarding-usability.test.ts"
+    "test:onboarding": "vitest run tests/onboarding-usability.test.ts",
+    "verify:pwa": "node scripts/verify-pwa.mjs"
   },
   "dependencies": { "three": "^0.178.0" },
   "devDependencies": {
