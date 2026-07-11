@@ -15,7 +15,8 @@
     "test:coverage": "vitest run --coverage",
     "test:privacy": "vitest run tests/privacy.test.ts",
     "test:a11y": "vitest run tests/a11y-contract.test.ts",
-    "benchmark:render": "vitest run tests/render-benchmark.test.ts"
+    "benchmark:render": "vitest run tests/render-benchmark.test.ts",
+    "test:compatibility": "vitest run tests/compatibility-matrix.test.ts"
   },
   "dependencies": { "three": "^0.178.0" },
   "devDependencies": {

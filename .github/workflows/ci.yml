@@ -17,4 +17,6 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm test
+      - run: npm run test:compatibility
+      - run: npm run benchmark:render
       - run: npm run build
