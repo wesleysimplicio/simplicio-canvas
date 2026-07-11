@@ -30,7 +30,7 @@ if (__DEMO_MODE__) {
   document.addEventListener('keydown', (event) => { if (event.key.toLowerCase() === 'h') event.stopImmediatePropagation() }, true)
   document.addEventListener('click', (event) => {
     const target = event.target instanceof Element ? event.target : null
-    if (target?.closest('#open-project, #open-github, #github-submit, #reset, #help-trigger')) { event.preventDefault(); event.stopImmediatePropagation() }
+    if (target?.closest('#open-project, #open-github, #github-submit, #reset, #help-trigger, #save-source')) { event.preventDefault(); event.stopImmediatePropagation() }
   }, true)
   document.addEventListener('change', (event) => {
     const target = event.target instanceof Element ? event.target : null
