@@ -32,6 +32,18 @@ describe('local project analyzer', () => {
     expect(analysis.files.find((file) => file.path === 'src/main.ts')?.imports).toHaveLength(1)
   })
 
+  it('resolves absolute Python modules into internal file connections', () => {
+    const analysis = analyzeProject('loop', [
+      { path: 'simplicio_loop/application/run_use_case.py', content: 'from simplicio_loop.domain.task import Task\nfrom simplicio_loop.runtime.task_service import TaskService', size: 120 },
+      { path: 'simplicio_loop/domain/task.py', content: 'class Task: pass', size: 16 },
+      { path: 'simplicio_loop/runtime/task_service.py', content: 'class TaskService: pass', size: 24 },
+    ])
+    expect(analysis.connections.filter((connection) => !connection.external)).toEqual(expect.arrayContaining([
+      expect.objectContaining({ source: 'simplicio_loop/application/run_use_case.py', target: 'simplicio_loop/domain/task.py', external: false }),
+      expect.objectContaining({ source: 'simplicio_loop/application/run_use_case.py', target: 'simplicio_loop/runtime/task_service.py', external: false }),
+    ]))
+  })
+
   it('ignores vendor folders and files that are too large', () => {
     const analysis = analyzeProject('demo', [
       { path: 'node_modules/pkg/index.js', content: '', size: 0 },
