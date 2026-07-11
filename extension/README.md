@@ -15,3 +15,7 @@ An eventual host should:
 The shared contracts are tested in `tests/m3-m4-contracts.test.ts`. This keeps
 the extension work safe to implement incrementally without coupling the web
 demo to a browser filesystem or a VS Code runtime.
+
+`npm run build:extension` type-checks the host adapter scaffold. It intentionally
+does not package a VSIX until the trust/apply service and end-to-end host tests
+land.

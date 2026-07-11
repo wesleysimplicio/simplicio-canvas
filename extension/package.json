@@ -1,0 +1,6 @@
+{
+  "name": "@simplicio/canvas-host-scaffold",
+  "private": true,
+  "type": "module",
+  "scripts": { "build": "tsc --project tsconfig.json --noEmit" }
+}
