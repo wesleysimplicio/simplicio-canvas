@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.4.0 — 2026-07-11
+
+- Add local first-insight timing to the onboarding tour.
+- Add metadata-only external compatibility scanning with offline/online modes.
+- Add lazy Monaco-compatible editor loading and popup close controls.
+
 ## 2.3.1 — 2026-07-11
 
 - Add visible `×` close controls to onboarding and command palette pop-ups.
