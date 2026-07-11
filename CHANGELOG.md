@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.5.0 — 2026-07-11
+
+- Add clickable Mapper flow endpoints with visible source provenance and camera focus.
+- Add guarded Source Control receipts with protected-main enforcement.
+- Add local opt-in telemetry diagnostics and measurable SLO reports.
+
 ## 1.4.0 — 2026-07-11
 
 - Add a real analyzed-file Explorer tree with focus-to-canvas selection.
