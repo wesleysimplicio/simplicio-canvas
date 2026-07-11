@@ -7,7 +7,8 @@ import { createWorkspaceSnapshot, recoverWorkspace, validateWorkspaceSnapshot } 
 import { ONBOARDING_STEPS, nextOnboarding, resetOnboarding, type OnboardingProgress } from '../src/domain/onboarding'
 import { analyzeDependencies, dependencySeverity, enrichDependencyReport, validateDependencyReport } from '../src/domain/dependency-intelligence'
 import { buildArchitectureGraph } from '../src/domain/architecture'
-import { createCacheKey, inspectWorkspaceCache, MemoryCacheAdapter, repairWorkspaceCache, saveWorkspaceCache } from '../src/domain/workspace-cache'
+import { createCacheKey, inspectWorkspaceCache, LocalStorageCacheAdapter, MemoryCacheAdapter, repairWorkspaceCache, saveWorkspaceCache } from '../src/domain/workspace-cache'
+import { diffGraphs, serializeGraphDiff } from '../src/domain/graph-diff'
 
 describe('privacy-preserving telemetry', () => {
   it('rejects source and identity fields and is consent gated', () => {
@@ -44,6 +45,13 @@ describe('architecture policy', () => {
     expect((policyToSarif(findings) as { runs: unknown[] }).runs).toHaveLength(1)
   })
 })
+describe('graph revision diff', () => {
+  it('classifies deterministic node/edge changes and exports evidence', () => {
+    const base = { schema: '1.0', project: { id: 'p', name: 'p' }, nodes: [{ id: 'n1', kind: 'file', name: 'a' }], edges: [], provenance: { source: 'git', generatedAt: 'r1', snapshot: 'r1' }, evidence: [] } as any
+    const next = { ...base, nodes: [...base.nodes, { id: 'n2', kind: 'file', name: 'b' }], provenance: { ...base.provenance, generatedAt: 'r2', snapshot: 'r2' } }
+    const diff = diffGraphs(base, next); expect(diff.changes).toMatchObject([{ kind: 'added', entity: 'node', id: 'n2' }]); expect(JSON.parse(serializeGraphDiff(diff)).schema).toBe('simplicio-graph-diff/v1')
+  })
+})
 
 describe('multi-repository and recovery contracts', () => {
   it('requires stable revisions and catches unknown edge repositories', () => {
@@ -63,6 +71,8 @@ describe('multi-repository and recovery contracts', () => {
     adapter.failNextWrite = true; expect(() => saveWorkspaceCache(adapter, { repository: 'loop', revision: 'next', configuration: 'default' }, snapshot)).toThrow(/interrupted/)
     const raw = adapter.read(key)!; adapter.writeAtomic(key, raw.slice(0, 12)); expect(inspectWorkspaceCache(adapter, key).status).toBe('corrupt')
     expect(repairWorkspaceCache(adapter, key).status).toBe('corrupt'); expect(inspectWorkspaceCache(adapter, key).status).toBe('missing')
+    const values = new Map<string, string>(); const storage = { getItem: (item: string) => values.get(item) ?? null, setItem: (item: string, value: string) => values.set(item, value), removeItem: (item: string) => values.delete(item) }
+    const local = new LocalStorageCacheAdapter(storage); const localKey = saveWorkspaceCache(local, { repository: 'loop', revision: 'rev', configuration: 'default' }, snapshot, 'now'); expect(inspectWorkspaceCache(local, localKey).status).toBe('valid')
   })
 })
 
