@@ -1,0 +1,18 @@
+import { describe, expect, it } from 'vitest'
+import { normalizeGitHubRepository } from '../src/domain/github-import'
+
+describe('GitHub repository import', () => {
+  it('normalizes an HTTPS GitHub repository URL', () => {
+    expect(normalizeGitHubRepository('https://github.com/wesleysimplicio/simplicio-loop.git')).toEqual({
+      owner: 'wesleysimplicio', repository: 'simplicio-loop', cloneUrl: 'https://github.com/wesleysimplicio/simplicio-loop.git', slug: 'wesleysimplicio/simplicio-loop',
+    })
+  })
+
+  it('accepts owner/repository shorthand', () => {
+    expect(normalizeGitHubRepository('wesleysimplicio/simplicio-loop').slug).toBe('wesleysimplicio/simplicio-loop')
+  })
+
+  it.each(['https://gitlab.com/a/b', 'https://github.com/a/b/issues/1', '../private', 'github.com/a'])('rejects unsafe or unsupported input %s', (value) => {
+    expect(() => normalizeGitHubRepository(value)).toThrow('GitHub repository')
+  })
+})
