@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.7.0 — 2026-07-11
+
+- Harden popup closure across pointer overlays and keep the command palette above onboarding.
+- Add PWA host-capability, integrity, opt-in activation and rollback contracts.
+- Extend Mapper compatibility evidence with deterministic repeats, timeout profiles and memory measurements.
+- Add readiness gates that keep compatibility and distribution claims honest until their external evidence is complete.
+
 ## 2.6.0 — 2026-07-11
 
 - Add release artifact signature/checksum verification contracts and publisher receipts.
