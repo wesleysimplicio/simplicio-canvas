@@ -10,3 +10,5 @@ export function semanticLevel(scale: number, previous: SemanticZoomLevel = 0): S
 }
 export function nextSemanticZoom(state: SemanticZoomState, scale: number, breadcrumb = state.breadcrumb): SemanticZoomState { return { ...state, level: semanticLevel(scale, state.level), breadcrumb: [...breadcrumb] } }
 export function semanticLabel(level: SemanticZoomLevel): string { return ['ecosystem', 'project', 'flow', 'symbol'][level] }
+export function parseSemanticZoomQuery(query: string): SemanticZoomLevel | undefined { const value = Number(new URLSearchParams(query.startsWith('?') ? query : `?${query}`).get('zoom')); return Number.isInteger(value) && value >= 0 && value <= 3 ? value as SemanticZoomLevel : undefined }
+export function serializeSemanticZoomQuery(level: SemanticZoomLevel, query = ''): string { const params = new URLSearchParams(query.startsWith('?') ? query.slice(1) : query); params.set('zoom', String(level)); return `?${params.toString()}` }
