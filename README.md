@@ -1,6 +1,10 @@
 # 🧩 Simplicio Canvas — visual software assembly
 
 <p align="center">
+  <strong>English</strong> · <a href="docs/i18n/README.pt-BR.md">Português</a> · <a href="docs/i18n/README.es.md">Español</a> · <a href="docs/i18n/README.fr.md">Français</a> · <a href="docs/i18n/README.de.md">Deutsch</a> · <a href="docs/i18n/README.it.md">Italiano</a> · <a href="docs/i18n/README.nl.md">Nederlands</a> · <a href="docs/i18n/README.pl.md">Polski</a> · <a href="docs/i18n/README.ru.md">Русский</a> · <a href="docs/i18n/README.uk.md">Українська</a> · <a href="docs/i18n/README.tr.md">Türkçe</a> · <a href="docs/i18n/README.ar.md">العربية</a> · <a href="docs/i18n/README.hi.md">हिन्दी</a> · <a href="docs/i18n/README.ja.md">日本語</a> · <a href="docs/i18n/README.zh-CN.md">简体中文</a>
+</p>
+
+<p align="center">
   <img src="assets/simplicio-canvas-overview.png" alt="Simplicio Canvas renders a software project as connected puzzle pieces in a Three.js workspace" width="920" />
 </p>
 
@@ -19,7 +23,7 @@
 
 ## ⚡ TL;DR
 
-Simplicio Canvas is an early local-first prototype for visual programming. It turns a project folder into colored puzzle pieces on a Three.js canvas:
+Simplicio Canvas is an early local-first prototype for visual programming. Its default workspace is the public [`wesleysimplicio/simplicio-loop`](https://github.com/wesleysimplicio/simplicio-loop) project, represented by a safe bundled snapshot. It turns a project folder into colored puzzle pieces on a Three.js canvas inside a VS Code-like workspace:
 
 - **Color** represents the software layer: presentation, application, domain, infrastructure, tests, docs, and configuration.
 - **Pieces** represent responsibilities such as screen, service, entity, repository, adapter, and test.
@@ -39,6 +43,37 @@ npm run dev
 ```
 
 Open the local URL, click **Open project**, and select a folder.
+
+The first screen already opens the official `wesleysimplicio/simplicio-loop` example. The planned bootstrap will also prepare `simplicio-mapper` and the installed `simplicio-loop` project skill; until that installer lands, both integrations remain explicit and local-first.
+
+## 🖥️ Real MVP proof
+
+### VS Code-like workspace
+
+![Desktop IDE shell with Activity Bar, Explorer, Three.js Canvas, terminal and inspector](output/playwright/vscode-shell-desktop.png)
+
+### Native responsive behavior
+
+| Phone portrait | Phone landscape |
+|---|---|
+| ![Phone portrait](output/playwright/responsive-phone-portrait.png) | ![Phone landscape](output/playwright/responsive-phone-landscape.png) |
+
+| Tablet | Desktop |
+|---|---|
+| ![Tablet](output/playwright/responsive-tablet.png) | ![Desktop](output/playwright/responsive-desktop.png) |
+
+<details>
+<summary>More captured evidence</summary>
+
+![Mobile IDE shell](output/playwright/vscode-shell-mobile.png)
+![Original mobile Canvas proof](output/playwright/mobile-canvas-390x844.png)
+![Initial Three.js MVP](output/playwright/simplicio-canvas-mvp.png)
+![Top-down project telemetry](output/playwright/top-down-project-hud.png)
+![Editable source terminal](output/playwright/example-source-terminal.png)
+![Universe navigation and README flows](output/playwright/universe-navigation-and-readme-flows.png)
+![Local folder analysis](output/playwright/folder-analysis-mvp.png)
+
+</details>
 
 ## 🧭 What the MVP analyzes
 
@@ -87,3 +122,7 @@ The domain analyzer and visual grammar are covered by Vitest. Browser proof is c
 ## 📜 License
 
 [MIT](LICENSE)
+
+## ⭐ Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=wesleysimplicio/simplicio-canvas&type=Date)](https://www.star-history.com/#wesleysimplicio/simplicio-canvas&Date)
