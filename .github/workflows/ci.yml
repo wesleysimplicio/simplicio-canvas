@@ -19,4 +19,5 @@ jobs:
       - run: npm test
       - run: npm run test:compatibility
       - run: npm run benchmark:render
+      - run: npm run benchmark:webgl
       - run: npm run build
