@@ -3,6 +3,9 @@ export type TelemetryConsent = 'unknown' | 'denied' | 'granted'
 export type TelemetryName = 'app_opened' | 'scan_completed' | 'interaction_latency' | 'render_completed' | 'error'
 export interface TelemetryEvent { id: string; name: TelemetryName; at: string; schema: 1; properties: Record<string, string | number | boolean> }
 export interface TelemetryStore { consent: TelemetryConsent; events: readonly TelemetryEvent[] }
+export interface SloSample { loadMs?: number; scanMs?: number; interactionMs?: number; frameMs?: number }
+export interface SloReport { schema: 'simplicio-slo/v1'; measuredAt: string; sample: SloSample; budgets: Required<SloSample>; status: Record<keyof Required<SloSample>, 'ok' | 'breach'> }
+export const DEFAULT_SLO_BUDGETS: Required<SloSample> = { loadMs: 3000, scanMs: 10000, interactionMs: 100, frameMs: 16.7 }
 
 const FORBIDDEN = /(?:source|body|content|path|url|repo|repository|prompt|secret|token|password|api[_-]?key|private[_-]?key)/i
 export function validateTelemetryProperties(properties: Record<string, unknown>): string[] {
@@ -20,3 +23,9 @@ export function recordTelemetry(store: TelemetryStore, event: TelemetryEvent): T
 }
 export function exportTelemetry(store: TelemetryStore): string { return JSON.stringify({ schema: 1, consent: store.consent, events: store.events }, null, 2) }
 export function deleteTelemetry(store: TelemetryStore): TelemetryStore { return { ...store, events: [] } }
+export function evaluateSlo(sample: SloSample, budgets: Required<SloSample> = DEFAULT_SLO_BUDGETS, measuredAt = new Date().toISOString()): SloReport {
+  const keys = Object.keys(budgets) as Array<keyof Required<SloSample>>
+  const status = Object.fromEntries(keys.map((key) => [key, sample[key] === undefined || sample[key]! <= budgets[key] ? 'ok' : 'breach'])) as SloReport['status']
+  return { schema: 'simplicio-slo/v1', measuredAt, sample: { ...sample }, budgets: { ...budgets }, status }
+}
+export function exportSloReport(report: SloReport): string { return JSON.stringify(report, null, 2) }

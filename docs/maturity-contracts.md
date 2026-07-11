@@ -11,5 +11,8 @@ The Canvas keeps maturity features renderer-independent and local-first. The con
 | `workspace-recovery.ts` | Snapshots are versioned and checksummed. Corrupt snapshots return `inspect`, never silent restore. | `tests/maturity-contracts.test.ts` |
 | `onboarding.ts` | First-run steps are local, skippable/resettable state; no analytics are required to progress. | `tests/maturity-contracts.test.ts` |
 | `dependency-intelligence.ts` | Dependency reports declare direct/transitive scope and support offline severity classification. Network lookup is not implicit. | `tests/maturity-contracts.test.ts` |
+| `telemetry.ts` | Local SLO budgets (load, scan, interaction and frame time) are evaluated without sending events. Consent is denied by default; users can export or clear local diagnostics. | `tests/maturity-contracts.test.ts` |
 
 These are integration-ready foundations, not claims that the browser can execute processes, access private repositories, ingest production telemetry or mutate source. Those capabilities require an explicit trusted-host adapter and remain separate follow-up work.
+
+The HUD's diagnostics row is intentionally local-only. Selecting **ATIVAR LOCAL** stores consent in browser preferences and enables SLO export; it never grants a network endpoint or includes source, paths, repository URLs or secrets in the event schema.

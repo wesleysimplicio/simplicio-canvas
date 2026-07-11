@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { createTelemetryEvent, deleteTelemetry, exportTelemetry, recordTelemetry, validateTelemetryProperties } from '../src/domain/telemetry'
+import { createTelemetryEvent, deleteTelemetry, evaluateSlo, exportSloReport, exportTelemetry, recordTelemetry, validateTelemetryProperties } from '../src/domain/telemetry'
 import { importRuntimeTrace, runtimeEdges, validateRuntimeTrace } from '../src/domain/runtime-trace'
 import { evaluatePolicy, policyToSarif } from '../src/domain/architecture-policy'
 import { validateWorkspaceManifest } from '../src/domain/multi-repo'
@@ -18,6 +18,8 @@ describe('privacy-preserving telemetry', () => {
     expect(granted.events).toHaveLength(1)
     expect(JSON.parse(exportTelemetry(granted)).events).toHaveLength(1)
     expect(deleteTelemetry(granted).events).toHaveLength(0)
+    const slo = evaluateSlo({ scanMs: 12, interactionMs: 120 }, { loadMs: 3000, scanMs: 10000, interactionMs: 100, frameMs: 16.7 }, 'now')
+    expect(slo.status.scanMs).toBe('ok'); expect(slo.status.interactionMs).toBe('breach'); expect(JSON.parse(exportSloReport(slo)).schema).toBe('simplicio-slo/v1')
   })
 })
 
