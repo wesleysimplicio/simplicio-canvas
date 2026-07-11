@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { buildArchitectureGraph } from '../src/domain/architecture'
 import { buildExplorerTree, closeEditorTab, createEditorState, openEditorFile, updateEditorContent, canCloseEditorTab, validateWorkspaceMutation } from '../src/domain/editor-workspace'
 import { proposeEdgeConnection, proposeEdgeReversal } from '../src/domain/edge-refactor'
-import { searchCommands, normalizePreferences, DEFAULT_PREFERENCES } from '../src/domain/workspace-preferences'
+import { PreferencesStore, searchCommands, normalizePreferences, DEFAULT_PREFERENCES } from '../src/domain/workspace-preferences'
 import { createReadOnlySourceControlAdapter, createSourceControlController, validateSourceControlAction, shouldRequirePullRequest, type SourceControlSnapshot } from '../src/domain/source-control'
 import { BrowserTerminalAdapter, GuardedProcessAdapter, TERMINAL_CONFIRMATION, validateTerminalRequest } from '../src/domain/terminal-adapter'
 import { LazyEditorHost } from '../src/domain/lazy-editor'
@@ -94,5 +94,10 @@ describe('IDE surface contracts', () => {
     expect(normalizePreferences({ version: 99 }).settings).toEqual(DEFAULT_PREFERENCES.settings)
     const run = vi.fn(); const commands = [{ id: 'canvas.open', label: 'Open Canvas', category: 'canvas' as const, run }, { id: 'mapper.scan', label: 'Run Mapper', category: 'mapper' as const, run }]
     expect(searchCommands(commands, 'mapper').map((command) => command.id)).toEqual(['mapper.scan'])
+  })
+
+  it('persists preferences and rejects conflicting remappable shortcuts', () => {
+    const data = new Map<string, string>(); const storage = { getItem: (key: string) => data.get(key) ?? null, setItem: (key: string, value: string) => { data.set(key, value) }, removeItem: (key: string) => { data.delete(key) } }
+    const store = new PreferencesStore(storage); expect(store.setShortcut('canvas.open', 'Ctrl+Shift+O').shortcuts['canvas.open']).toBe('ctrl+shift+o'); expect(() => store.setShortcut('canvas.search', 'ctrl+shift+o')).toThrow('conflicts'); const exported = store.export(); store.reset(); expect(store.get().shortcuts['canvas.open']).toBe(DEFAULT_PREFERENCES.shortcuts['canvas.open']); expect(store.import(exported).shortcuts['canvas.open']).toBe('ctrl+shift+o')
   })
 })
