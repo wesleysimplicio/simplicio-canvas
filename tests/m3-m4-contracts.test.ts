@@ -11,6 +11,7 @@ import { canApply } from '../src/domain/workspace-security'
 import { createExtensionApplyService } from '../src/domain/extension-apply'
 import { verifyTransformation } from '../src/domain/transformation-eval'
 import { activate } from '../extension/src/extension'
+import { createHostProcessRunner } from '../extension/src/process-host'
 
 const graph = buildArchitectureGraph(['src/ui/app.ts', 'src/application/run.ts', 'src/domain/task.ts', 'tests/task.test.ts'])
 
@@ -32,6 +33,10 @@ describe('M3 canvas and extension contracts', () => {
     let disposed = false; let deactivated: (() => void) | undefined; let opened = 0
     const extension = activate({ registerCommand: (command, handler) => { expect(command).toBe('simplicioCanvas.open'); handler(); return { dispose: () => { disposed = true } } }, onDeactivate: (listener) => { deactivated = listener } }, () => { opened += 1 })
     expect(opened).toBe(1); deactivated?.(); expect(disposed).toBe(true); extension.dispose(); expect(disposed).toBe(true)
+  })
+  it('bridges host PTY chunks and abort into a bounded domain runner', async () => {
+    let killed = false; let exit: ((code: number) => void) | undefined; const runner = createHostProcessRunner({ spawn: (request, onData, onExit) => { expect(request.cwd).toBe('/workspace'); onData('mapper: scanning\n'); exit = onExit; return { kill: () => { killed = true } } } })
+    const controller = new AbortController(); const pending = runner({ command: 'mapper scan .', cwd: '/workspace', confirmation: 'RUN' }, () => undefined, controller.signal); controller.abort(); expect(await pending).toBe(130); expect(killed).toBe(true); exit?.(0)
   })
 
   it('validates typed extension messages and rejects malformed payloads', () => {
