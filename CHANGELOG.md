@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.0 — 2026-07-11
+
+- Add a cross-platform, dry-run-first bootstrap receipt for `simplicio-mapper`, `simplicio-loop` and the project skill.
+- Detect the canonical `.claude/skills/simplicio-loop/SKILL.md` location without performing silent installs.
+- Keep the hosted demo read-only while local builds retain the importer/editor contracts.
+
 ## 1.2.0 — 2026-07-11
 
 - Added Mapper Mermaid/JSON flow parsing, 15 selectable locales, privacy snapshot guards and renderer LOD helpers.

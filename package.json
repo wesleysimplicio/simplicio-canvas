@@ -1,7 +1,7 @@
 {
   "name": "simplicio-canvas",
   "private": true,
-  "version": "1.2.0",
+  "version": "1.3.0",
   "type": "module",
   "scripts": {
     "dev": "vite --host 127.0.0.1",
@@ -9,6 +9,7 @@
     "build:demo": "VITE_CANVAS_DEMO=true VITE_BASE_PATH=/simplicio_canvas/ vite build --outDir dist-demo --emptyOutDir",
     "build:extension": "tsc --project extension/tsconfig.json --noEmit",
     "deploy:demo": "./scripts/deploy-demo.sh",
+    "bootstrap": "node scripts/bootstrap.mjs --dry-run",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage"
   },

@@ -59,7 +59,7 @@ Open the local URL and choose either (the public URL intentionally exposes neith
 
 ![GitHub clone and Mapper import dialog](assets/gallery/gallery-desktop.png)
 
-The first screen already opens the official `wesleysimplicio/simplicio-loop` example. The planned bootstrap will also prepare `simplicio-mapper` and the installed `simplicio-loop` project skill; until that installer lands, both integrations remain explicit and local-first.
+The first screen already opens the official `wesleysimplicio/simplicio-loop` example. Run `npm run bootstrap` to emit a local JSON readiness receipt for `simplicio-mapper`, the installed `simplicio-loop` CLI and its project skill. The command is dry-run by default; `node scripts/bootstrap.mjs --repair` is the explicit opt-in repair path.
 
 ## 🖥️ Real MVP proof
 
