@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.1.0 — 2026-07-11
+
+- Added versioned graph schema, stable identities, Python/TypeScript scanning, configurable classification and semantic explorer contracts.
+- Added typed relations, visual operations, compatibility checks, deterministic change plans, generators and guarded apply/undo contracts.
+- Added renderer-neutral Canvas SDK, VS Code/Cursor message contracts, workspace security, watcher, selection sync and AI proposal/audit contracts.
+- Added extension build scaffold and 79-test validation gate.
+
 ## 1.0.0 — 2026-07-11
 
 Simplicio Canvas is now a usable local-first architecture explorer:
