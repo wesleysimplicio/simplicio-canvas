@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { analyzeProject, detectLanguage, extractImports, sourceLines } from '../src/domain/analyzer'
+import { analyzeProject, detectLanguage, extractDocumentedFlows, extractImports, sourceLines } from '../src/domain/analyzer'
 
 describe('local project analyzer', () => {
   it.each([
@@ -46,5 +46,19 @@ describe('local project analyzer', () => {
     expect(sourceLines('<main>\nconst x = 1', 2)).toEqual([
       { number: 1, text: '&lt;main&gt;' }, { number: 2, text: 'const x = 1' },
     ])
+  })
+
+  it('extracts documented flows from prose and Mermaid arrows', () => {
+    const flows = extractDocumentedFlows('README.md', `
+      Browser → Analyzer → Canvas
+      flowchart LR
+      API --> Service --> Repository
+    `)
+    expect(flows).toEqual(expect.arrayContaining([
+      { source: 'Browser', target: 'Analyzer', document: 'README.md' },
+      { source: 'Analyzer', target: 'Canvas', document: 'README.md' },
+      { source: 'API', target: 'Service', document: 'README.md' },
+      { source: 'Service', target: 'Repository', document: 'README.md' },
+    ]))
   })
 })
