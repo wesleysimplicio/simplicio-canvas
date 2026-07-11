@@ -18,7 +18,8 @@ export function validateTerminalRequest(request: TerminalRequest, trust: Workspa
 export class BrowserTerminalAdapter implements TerminalAdapter {
   readonly mode = 'browser-simulated' as const
   async run(request: TerminalRequest): Promise<TerminalReceipt> {
-    const now = new Date().toISOString(); return { id: `browser-${Date.now()}`, command: request.command, cwd: request.cwd, exitCode: 0, output: 'Browser mode is read-only; no local process was started.', startedAt: now, endedAt: now, mode: this.mode }
+    const now = new Date().toISOString(); const confirmed = request.confirmation === TERMINAL_CONFIRMATION && request.command.trim().length > 0
+    return { id: `browser-${Date.now()}`, command: request.command, cwd: request.cwd, exitCode: confirmed ? 0 : 1, output: confirmed ? 'Browser mode is read-only; no local process was started.' : 'Run blocked: explicit confirmation and a command are required.', startedAt: now, endedAt: now, mode: this.mode }
   }
   async stop(): Promise<void> { /* no process exists in browser mode */ }
 }
