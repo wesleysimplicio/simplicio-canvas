@@ -8,6 +8,12 @@
 
 The hosted URL is a secure, read-only visualization of the bundled `simplicio-loop` example. Clone this repository and run the default build locally when you need folder/GitHub import or editing.
 
+The orchestration skill used for the example is available as the Python package [`simplicio-loop==3.25.1`](https://pypi.org/project/simplicio-loop/3.25.1/):
+
+```bash
+python3 -m pip install simplicio-loop==3.25.1
+```
+
 <p align="center">
   <img src="assets/simplicio-canvas-overview.png" alt="Simplicio Canvas renders a software project as connected puzzle pieces in a Three.js workspace" width="920" />
 </p>
