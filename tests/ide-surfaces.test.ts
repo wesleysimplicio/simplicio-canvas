@@ -5,7 +5,7 @@ import { proposeEdgeConnection, proposeEdgeReversal } from '../src/domain/edge-r
 import { searchCommands, normalizePreferences, DEFAULT_PREFERENCES } from '../src/domain/workspace-preferences'
 import { createReadOnlySourceControlAdapter, createSourceControlController, validateSourceControlAction, shouldRequirePullRequest, type SourceControlSnapshot } from '../src/domain/source-control'
 import { BrowserTerminalAdapter, TERMINAL_CONFIRMATION, validateTerminalRequest } from '../src/domain/terminal-adapter'
-import { createRunSession, startRunSession, validateLaunchConfiguration } from '../src/domain/run-debug'
+import { boundRunOutput, createRunSession, finishRunSession, restartRunSession, startRunSession, stopRunSession, validateLaunchConfiguration } from '../src/domain/run-debug'
 
 const graph = buildArchitectureGraph(['src/a.ts', 'src/b.ts', 'tests/a.test.ts'])
 const trust = { trusted: true, root: '/workspace' }
@@ -59,6 +59,13 @@ describe('IDE surface contracts', () => {
   it('validates launch profiles and exposes a confirmation gate', () => {
     const config = { id: 'mapper', name: 'Mapper scan', type: 'mapper' as const, request: { command: 'simplicio-mapper scan .', cwd: '/workspace' } }
     expect(validateLaunchConfiguration(config, trust)).toEqual([]); const session = createRunSession(config, trust); expect(session.state).toBe('awaiting-confirmation'); expect(startRunSession(session, 'no').state).toBe('failed'); expect(startRunSession(session, 'RUN').state).toBe('running')
+  })
+
+  it('supports guarded run lifecycle with bounded output and restart', () => {
+    const config = { id: 'mapper', name: 'Mapper scan', type: 'mapper' as const, request: { command: 'simplicio-mapper scan .', cwd: '/workspace' } }
+    let session = createRunSession(config, trust); session = startRunSession(session, 'RUN'); expect(session.state).toBe('running'); expect(startRunSession(session, 'RUN').errors.at(-1)).toContain('already active')
+    const receipt = { id: 'run-1', command: config.request.command, cwd: config.request.cwd, exitCode: 0, output: 'x'.repeat(120_000), startedAt: '2026-01-01T00:00:00Z', endedAt: '2026-01-01T00:00:01Z', mode: 'browser-simulated' as const }
+    session = finishRunSession(session, receipt); expect(session.state).toBe('stopped'); expect(session.receipt?.output.length).toBeLessThan(100_000); expect(boundRunOutput('ok')).toBe('ok'); expect(stopRunSession(session).errors.at(-1)).toContain('not active'); expect(restartRunSession(session, 'RUN').state).toBe('running')
   })
 
   it('normalizes settings and searches command palette deterministically', () => {
