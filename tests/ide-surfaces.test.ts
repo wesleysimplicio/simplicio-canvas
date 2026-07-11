@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import { buildArchitectureGraph } from '../src/domain/architecture'
 import { buildExplorerTree, closeEditorTab, createEditorState, openEditorFile, updateEditorContent, canCloseEditorTab, validateWorkspaceMutation } from '../src/domain/editor-workspace'
-import { proposeEdgeConnection, proposeEdgeReversal } from '../src/domain/edge-refactor'
+import { proposeEdgeConnection, proposeEdgeReconnection, proposeEdgeReversal } from '../src/domain/edge-refactor'
 import { PreferencesStore, searchCommands, normalizePreferences, DEFAULT_PREFERENCES } from '../src/domain/workspace-preferences'
 import { createReadOnlySourceControlAdapter, createSourceControlController, validateSourceControlAction, shouldRequirePullRequest, type SourceControlSnapshot } from '../src/domain/source-control'
 import { BrowserTerminalAdapter, GuardedProcessAdapter, TERMINAL_CONFIRMATION, validateTerminalRequest } from '../src/domain/terminal-adapter'
@@ -37,6 +37,7 @@ describe('IDE surface contracts', () => {
     expect(proposeEdgeConnection({ ...graph, edges: [] }, edge).operations).toHaveLength(1)
     expect(proposeEdgeConnection({ ...graph, edges: [{ from: b, to: a, type: 'depends' }] }, edge).errors).toContain('connection would create a dependency cycle')
     expect(proposeEdgeReversal({ ...graph, edges: [edge] }, edge).operations).toHaveLength(2)
+    expect(proposeEdgeReconnection({ ...graph, edges: [edge] }, edge, { from: a, to: b, type: 'depends' })).toMatchObject({ kind: 'reconnect', readonly: true })
   })
 
   it('keeps source control actions trusted and main protection visible', () => {

@@ -28,3 +28,13 @@ export function proposeEdgeReversal(graph: ArchitectureGraph, edge: Architecture
   if (reaches(graph, next.to, next.from, key(edge))) errors.push('reversal would create a dependency cycle')
   return { kind: 'reverse', edge: next, operations: errors.length ? [] : [{ type: 'disconnect', edge: { ...edge } }, { type: 'connect', edge: next }], errors, readonly: true }
 }
+
+export function proposeEdgeReconnection(graph: ArchitectureGraph, existing: ArchitectureEdge, replacement: ArchitectureEdge): EdgeRefactorProposal {
+  const errors: string[] = []
+  if (!graph.edges.some((item) => key(item) === key(existing))) errors.push('edge to reconnect does not exist')
+  if (!graph.nodes.some((node) => node.id === replacement.from) || !graph.nodes.some((node) => node.id === replacement.to)) errors.push('replacement endpoints must exist')
+  if (replacement.from === replacement.to) errors.push('self connections are not allowed')
+  if (graph.edges.some((item) => key(item) === key(replacement) && key(item) !== key(existing))) errors.push('replacement edge already exists')
+  if (reaches(graph, replacement.to, replacement.from, key(existing))) errors.push('reconnection would create a dependency cycle')
+  return { kind: 'reconnect', edge: { ...replacement }, operations: errors.length ? [] : [{ type: 'disconnect', edge: { ...existing } }, { type: 'connect', edge: { ...replacement } }], errors, readonly: true }
+}
