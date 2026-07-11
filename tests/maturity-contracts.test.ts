@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { createTelemetryEvent, deleteTelemetry, evaluateSlo, exportSloReport, exportTelemetry, recordTelemetry, validateTelemetryProperties } from '../src/domain/telemetry'
 import { correlateRuntimeTrace, importRuntimeTrace, runtimeEdges, validateRuntimeTrace } from '../src/domain/runtime-trace'
-import { evaluatePolicy, policyToSarif } from '../src/domain/architecture-policy'
+import { applyPolicyBaseline, createPolicyBaseline, evaluatePolicy, newPolicyFindings, parsePolicyBaseline, policyToSarif } from '../src/domain/architecture-policy'
 import { validateWorkspaceManifest } from '../src/domain/multi-repo'
 import { createWorkspaceSnapshot, recoverWorkspace, validateWorkspaceSnapshot } from '../src/domain/workspace-recovery'
 import { ONBOARDING_STEPS, nextOnboarding, resetOnboarding, type OnboardingProgress } from '../src/domain/onboarding'
@@ -43,6 +43,8 @@ describe('architecture policy', () => {
     const findings = evaluatePolicy(graph, { version: 1, name: 'layered', allowedLayers: { presentation: ['application'], domain: [] } })
     expect(findings.some((finding) => finding.rule === 'allowed-layers')).toBe(true)
     expect((policyToSarif(findings) as { runs: unknown[] }).runs).toHaveLength(1)
+    const baseline = createPolicyBaseline({ version: 1, name: 'layered' }, findings, 'now'); const suppressed = applyPolicyBaseline(findings, baseline)
+    expect(suppressed.every((finding) => finding.suppressed)).toBe(true); expect(newPolicyFindings(findings, baseline)).toHaveLength(0); expect(parsePolicyBaseline(JSON.parse(JSON.stringify(baseline))).findingIds).toEqual(baseline.findingIds)
   })
 })
 describe('graph revision diff', () => {
