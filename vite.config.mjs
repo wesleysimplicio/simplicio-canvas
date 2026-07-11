@@ -51,4 +51,4 @@ function githubImportPlugin() {
   }}
 }
 
-export default defineConfig({ server: { host: '127.0.0.1' }, plugins: [githubImportPlugin()] })
+export default defineConfig({ base: process.env.VITE_BASE_PATH ?? '/', define: { __DEMO_MODE__: JSON.stringify(process.env.VITE_CANVAS_DEMO === 'true') }, server: { host: '127.0.0.1' }, plugins: [githubImportPlugin()] })

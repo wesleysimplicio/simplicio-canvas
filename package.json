@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite --host 127.0.0.1",
     "build": "tsc && vite build",
+    "build:demo": "VITE_CANVAS_DEMO=true VITE_BASE_PATH=/simplicio_canvas/ vite build --outDir dist-demo --emptyOutDir",
+    "deploy:demo": "./scripts/deploy-demo.sh",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage"
   },

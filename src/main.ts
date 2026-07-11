@@ -11,6 +11,7 @@ import { responsiveLayout } from './domain/responsive-layout'
 import { DEFAULT_WORKSPACE, IDE_ACTIVITIES, nextActivity, type ActivityId } from './domain/ide-shell'
 import { normalizeGitHubRepository } from './domain/github-import'
 import { ACTIVE_LOCALES, ALL_LOCALES, localeLabel, t, type Locale } from './domain/i18n'
+import { PUBLIC_DEMO_POLICY } from './domain/demo-policy'
 import './style.css'
 import './analysis.css'
 
@@ -23,6 +24,11 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <div id="scan-status" class="scan-status" hidden><i></i><span>ANALISANDO PROJETO…</span></div><button id="help-trigger" class="help-trigger" title="Atalhos">H</button><div id="help" class="help" hidden><button id="help-close">×</button><b>CONTROLES DO UNIVERSO</b><span><kbd>arraste vazio</kbd> mover pelo projeto</span><span><kbd>arraste peça</kbd> organizar o desenho</span><span><kbd>scroll</kbd> aproximar / afastar</span><span><kbd>H</kbd> ferramenta mão</span><span><kbd>T</kbd> vista aérea</span><span><kbd>clique</kbd> abrir terminal e conexões</span></div><div class="hint">arraste o vazio para mover · T vista aérea · H mão</div><div class="bottom-panel"><div class="panel-tabs"><b>PROBLEMS <small>0</small></b><b>OUTPUT</b><b>DEBUG CONSOLE</b><b class="active">TERMINAL</b><span></span><button aria-label="Novo terminal">＋</button><button aria-label="Fechar terminal">×</button></div><code><i>➜</i> simplicio-loop <em>git:(main)</em> <span>simplicio-mapper scan . --visualization</span></code></div></section>
   <aside id="inspector" class="inspector"><div class="sheet-grip"></div><button id="inspector-close" aria-label="Fechar inspector">×</button><p class="eyebrow">INSPECTOR</p><div id="selection"><div class="empty-orbit">◌</div><h2>Selecione uma peça</h2><p>Veja o papel, caminho e encaixes do objeto.</p></div></aside></main>
   <footer><span class="branch">⑂ main*</span><span id="stats"></span><span><i class="pulse"></i> FLUXOS ATIVOS</span><span>Ln 1, Col 1 · UTF-8 · {} TypeScript</span><span>LOCAL-FIRST</span></footer><div id="github-dialog" class="github-dialog" hidden><form><button type="button" id="github-close" aria-label="Fechar">×</button><p class="eyebrow">IMPORTAR DO GITHUB</p><h2>Clone local + Mapper</h2><p>O repositório público será clonado em <code>.simplicio/workspaces</code> e analisado localmente.</p><label>REPOSITÓRIO<input id="github-repository" value="wesleysimplicio/simplicio-loop" autocomplete="off"></label><button id="github-submit" type="submit">CLONAR E VISUALIZAR</button><small id="github-status">A leitura básica funciona mesmo se o simplicio-mapper não estiver disponível.</small></form></div>`
+document.documentElement.classList.toggle('demo-mode', __DEMO_MODE__)
+if (__DEMO_MODE__) {
+  document.querySelectorAll<HTMLInputElement | HTMLButtonElement>('#mapper-file, #folder, #open-github, #open-project, #reset').forEach((control) => { control.disabled = true })
+  document.addEventListener('keydown', (event) => { if (event.key.toLowerCase() === 'h') event.stopImmediatePropagation() }, true)
+}
 
 let currentLocale: Locale = (localStorage.getItem('simplicio-canvas.locale') as Locale | null) ?? 'pt-BR'
 if (!ACTIVE_LOCALES.includes(currentLocale)) currentLocale = 'pt-BR'
@@ -83,6 +89,13 @@ function load(paths:string[],name:string,current?:ProjectAnalysis){
 }
 function loadExample(){writableHandles.clear();const example=analyzeProject(`${DEFAULT_WORKSPACE.owner}/${DEFAULT_WORKSPACE.repository}`,SIMPLICIO_LOOP_FILES);load(example.files.map(file=>file.path),`${DEFAULT_WORKSPACE.owner}/${DEFAULT_WORKSPACE.repository} · exemplo`,example);if(innerWidth>=850){const selected=[...meshNodes.values()].find(node=>node.path.endsWith('run_use_case.py'))??[...meshNodes.values()][0];if(selected)showNode(selected)}}
 loadExample()
+if (__DEMO_MODE__) {
+  document.body.classList.add('readonly-demo')
+  const selection = document.querySelector('#selection')!
+  const enforceReadonly = () => { selection.querySelectorAll<HTMLTextAreaElement>('textarea').forEach((editor) => { editor.readOnly = !PUBLIC_DEMO_POLICY.canEditSource }); selection.querySelectorAll<HTMLElement>('.editor-actions').forEach((actions) => { actions.hidden = !PUBLIC_DEMO_POLICY.canSaveSource }) }
+  new MutationObserver(enforceReadonly).observe(selection, { childList: true }); enforceReadonly()
+  if (dragControls) dragControls.enabled = PUBLIC_DEMO_POLICY.canMovePieces
+}
 async function readFolderHandle(directory: FileSystemDirectoryHandle) {
   writableHandles.clear();const inputs:SourceFileInput[]=[]
   const walk=async(handle:FileSystemDirectoryHandle,prefix=''):Promise<void>=>{const iterable=handle as FileSystemDirectoryHandle & {values:()=>AsyncIterable<FileSystemHandle>};for await(const entry of iterable.values()){const path=prefix?`${prefix}/${entry.name}`:entry.name;if(entry.kind==='directory')await walk(entry as FileSystemDirectoryHandle,path);else{const file=await (entry as FileSystemFileHandle).getFile();let content='';if(file.size<=1_000_000)try{content=await file.text()}catch{content=''}inputs.push({path,content,size:file.size});writableHandles.set(path,entry as FileSystemFileHandle)}}}
