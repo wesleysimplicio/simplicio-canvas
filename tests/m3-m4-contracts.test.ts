@@ -9,6 +9,7 @@ import { previewProposal, validateProposal } from '../src/domain/ai-contracts'
 import { AuditLog } from '../src/domain/audit-log'
 import { canApply } from '../src/domain/workspace-security'
 import { createExtensionApplyService } from '../src/domain/extension-apply'
+import { verifyTransformation } from '../src/domain/transformation-eval'
 
 const graph = buildArchitectureGraph(['src/ui/app.ts', 'src/application/run.ts', 'src/domain/task.ts', 'tests/task.test.ts'])
 
@@ -70,6 +71,10 @@ describe('M4 AI intent, explanation and safety contracts', () => {
     expect(canApply({ trusted: true, root: '/workspace' }, '/workspace/src/a.ts')).toBe(true)
     expect(canApply({ trusted: false, root: '/workspace' }, '/workspace/src/a.ts')).toBe(false)
     expect(canApply({ trusted: true, root: '/workspace' }, '/workspace/../secret')).toBe(false)
+  })
+  it('retains red/green transformation evidence and rejects failed verification', () => {
+    expect(verifyTransformation('proposal-1', ['tests/task.test.ts'], true, true)).toMatchObject({ before: 'green', after: 'green', accepted: true })
+    expect(verifyTransformation('proposal-2', ['tests/task.test.ts'], true, false)).toMatchObject({ before: 'green', after: 'rejected', accepted: false })
   })
   it('keeps extension apply host-side and requires preview, trust and checkpoint receipt', async () => {
     const service = createExtensionApplyService({ trusted: true, root: '/workspace' }, { write: vi.fn(async () => 'checkpoint-1') })
