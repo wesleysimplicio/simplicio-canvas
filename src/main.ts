@@ -12,6 +12,7 @@ import { DEFAULT_WORKSPACE, IDE_ACTIVITIES, nextActivity, type ActivityId } from
 import { normalizeGitHubRepository } from './domain/github-import'
 import { ACTIVE_LOCALES, ALL_LOCALES, isRtlLocale, localeLabel, t, type Locale } from './domain/i18n'
 import { PUBLIC_DEMO_POLICY } from './domain/demo-policy'
+import { semanticLabel, semanticLevel, type SemanticZoomLevel } from './domain/semantic-zoom'
 import './style.css'
 import './analysis.css'
 
@@ -62,7 +63,7 @@ const renderer = new THREE.WebGLRenderer({ canvas, antialias: true }); renderer.
 const controls = new MapControls(camera, canvas); controls.enableDamping = true; controls.target.set(10, 0, 1); controls.maxPolarAngle = Math.PI / 2.05
 scene.add(new THREE.HemisphereLight('#d6fff5', '#06100d', 2.2)); const key = new THREE.DirectionalLight('#fff1d4', 4); key.position.set(8, 18, 10); key.castShadow = true; scene.add(key)
 const grid = new THREE.GridHelper(60, 60, '#19352f', '#10241f'); scene.add(grid)
-let group = new THREE.Group(); scene.add(group); const raycaster = new THREE.Raycaster(); const pointer = new THREE.Vector2(); const meshNodes = new Map<THREE.Object3D, ArchitectureNode>(); const clickableNodes = new Map<THREE.Object3D, ArchitectureNode>(); const nodeSprites=new Map<THREE.Object3D,THREE.Sprite>(); const writableHandles=new Map<string,FileSystemFileHandle>(); let dragControls:DragControls|undefined; let analysis: ProjectAnalysis | undefined; let handMode=false; let flowVisible=true; const activeLayers = new Set<string>(); let cameraView:CameraView='perspective';const perspectivePosition=new THREE.Vector3();const perspectiveTarget=new THREE.Vector3()
+let group = new THREE.Group(); scene.add(group); const raycaster = new THREE.Raycaster(); const pointer = new THREE.Vector2(); const meshNodes = new Map<THREE.Object3D, ArchitectureNode>(); const clickableNodes = new Map<THREE.Object3D, ArchitectureNode>(); const nodeSprites=new Map<THREE.Object3D,THREE.Sprite>(); const writableHandles=new Map<string,FileSystemFileHandle>(); let dragControls:DragControls|undefined; let analysis: ProjectAnalysis | undefined; let handMode=false; let flowVisible=true; let zoomLevel:SemanticZoomLevel=0; const activeLayers = new Set<string>(); let cameraView:CameraView='perspective';const perspectivePosition=new THREE.Vector3();const perspectiveTarget=new THREE.Vector3()
 
 function puzzleGeometry(kind: string) {
   const shape = new THREE.Shape(); const w = 3.6, h = 1.65, r = kind === 'entity' ? .48 : .34
@@ -104,6 +105,8 @@ function load(paths:string[],name:string,current?:ProjectAnalysis){
 function loadExample(){writableHandles.clear();const example=analyzeProject(`${DEFAULT_WORKSPACE.owner}/${DEFAULT_WORKSPACE.repository}`,SIMPLICIO_LOOP_FILES);load(example.files.map(file=>file.path),`${DEFAULT_WORKSPACE.owner}/${DEFAULT_WORKSPACE.repository} · exemplo`,example);if(innerWidth>=850){const selected=[...meshNodes.values()].find(node=>node.path.endsWith('run_use_case.py'))??[...meshNodes.values()][0];if(selected)showNode(selected)}}
 loadExample()
 document.querySelector<HTMLButtonElement>('#flow-toggle')!.addEventListener('click',()=>{flowVisible=!flowVisible;document.querySelector<HTMLButtonElement>('#flow-toggle')!.classList.toggle('active',flowVisible);group.children.forEach((child)=>{if(child.userData.flow)child.visible=flowVisible})})
+function updateSemanticZoom(){const distance=camera.position.distanceTo(controls.target);const scale=Math.max(0,Math.min(1,1-distance/58));zoomLevel=semanticLevel(scale,zoomLevel);document.documentElement.dataset.semanticZoom=String(zoomLevel);const breadcrumb=document.querySelector<HTMLElement>('.stage-label span');if(breadcrumb)breadcrumb.textContent=`ARQUITETURA / ${semanticLabel(zoomLevel).toUpperCase()}`;nodeSprites.forEach((sprite)=>{sprite.visible=zoomLevel>=1 && (!activeLayers.size || activeLayers.has(meshNodes.get([...nodeSprites.entries()].find(([,candidate])=>candidate===sprite)?.[0] as THREE.Object3D)?.layer??''))})}
+controls.addEventListener('change',updateSemanticZoom)
 if (__DEMO_MODE__) {
   document.body.classList.add('readonly-demo')
   const selection = document.querySelector('#selection')!
