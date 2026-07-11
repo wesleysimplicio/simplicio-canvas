@@ -18,6 +18,13 @@ export class MemoryCacheAdapter implements CacheAdapter {
   remove(key: string): void { this.values.delete(key); this.values.delete(`${key}.tmp`) }
 }
 
+export class LocalStorageCacheAdapter implements CacheAdapter {
+  constructor(private readonly storage: Pick<Storage, 'getItem' | 'setItem' | 'removeItem'> = localStorage) {}
+  read(key: string): string | undefined { try { return this.storage.getItem(key) ?? undefined } catch { return undefined } }
+  writeAtomic(key: string, value: string): void { const temp = `${key}.tmp`; this.storage.setItem(temp, value); this.storage.setItem(key, this.storage.getItem(temp) ?? value); this.storage.removeItem(temp) }
+  remove(key: string): void { this.storage.removeItem(key); this.storage.removeItem(`${key}.tmp`) }
+}
+
 export function inspectWorkspaceCache(adapter: CacheAdapter, key: string, expectedRevision?: string): CacheInspection {
   const raw = adapter.read(key); if (!raw) return { status: 'missing', key, reason: 'cache entry does not exist' }
   let envelope: WorkspaceCacheEnvelope
