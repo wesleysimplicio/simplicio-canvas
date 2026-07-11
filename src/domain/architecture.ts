@@ -1,5 +1,5 @@
-export type LayerId = 'presentation' | 'application' | 'domain' | 'infrastructure' | 'tests' | 'docs' | 'config'
 import { stableGraphId } from './graph-schema'
+export type LayerId = 'presentation' | 'application' | 'domain' | 'infrastructure' | 'tests' | 'docs' | 'config'
 export type PieceKind = 'screen' | 'controller' | 'use-case' | 'service' | 'entity' | 'repository' | 'adapter' | 'test' | 'config' | 'module'
 
 export const LAYERS: Record<LayerId, { label: string; color: string; order: number; role: string }> = {

@@ -79,3 +79,6 @@ export function deserializeOperation(value: string): VisualOperation {
 export function createNode(id: string, path: string, kind: PieceKind = 'module', layer: ArchitectureNode['layer'] = 'infrastructure'): ArchitectureNode {
   return { id, path, name: path.split('/').pop() ?? path, kind, layer, x: 0, z: 0 }
 }
+
+export function reverseEdge(edge: ArchitectureEdge): ArchitectureEdge { return { from: edge.to, to: edge.from, type: edge.type } }
+export function reconnectEdge(previous: ArchitectureEdge, next: ArchitectureEdge): VisualOperation { return { type: 'batch', operations: [{ type: 'disconnect', edge: previous }, { type: 'connect', edge: next }] } }
