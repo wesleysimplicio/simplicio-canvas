@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.4.0 — 2026-07-11
+
+- Add a real analyzed-file Explorer tree with focus-to-canvas selection.
+- Add visible Source Control governance state, protected-main guidance and host-safe Run/Debug receipts.
+- Add command palette shortcuts and searchable Canvas/workspace actions.
+- Add architecture policy findings, offline dependency intelligence and local SARIF export.
+- Add filtered-node focus, minimap navigation and keyboard camera fit.
+
 ## 1.3.1 — 2026-07-11
 
 - Harden the hosted demo: import controls, GitHub clone dialog and source editing are disabled and hidden at runtime.
