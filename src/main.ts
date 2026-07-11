@@ -88,25 +88,35 @@ document.querySelector('#onboarding-skip')!.addEventListener('click', () => { on
 document.querySelector('#onboarding-reset')!.addEventListener('click', () => { onboarding = { ...resetOnboarding(), state: 'active' }; persistOnboarding(); renderOnboarding() })
 document.querySelector('#onboarding-close')!.addEventListener('click', () => { onboarding = { ...onboarding, state: 'skipped' }; persistOnboarding(); renderOnboarding() })
 renderOnboarding()
-document.addEventListener('click', (event) => {
+function closePopup(popup: HTMLElement | null) {
+  if (!popup) return false
+  popup.hidden = true
+  if (popup.id === 'onboarding') { onboarding = { ...onboarding, state: 'skipped' }; persistOnboarding() }
+  return true
+}
+const handlePopupClose = (event: Event) => {
   const target = event.target instanceof Element ? event.target : null
   const close = target?.closest('.popup-close')
   if (!close) return
   const popup = close.closest('#command-palette, #onboarding') as HTMLElement | null
   if (!popup) return
-  event.preventDefault(); event.stopImmediatePropagation(); popup.hidden = true
-  if (popup.id === 'onboarding') { onboarding = { ...onboarding, state: 'skipped' }; persistOnboarding() }
-}, true)
+  event.preventDefault(); event.stopImmediatePropagation(); closePopup(popup)
+}
+// Capture both pointer and click so the close affordance works even when a
+// canvas/overlay consumes the bubbling click. The click handler remains for
+// keyboard activation and assistive technology.
+document.addEventListener('pointerdown', handlePopupClose, true)
+document.addEventListener('click', handlePopupClose, true)
 addEventListener('keydown', (event) => {
-  if (event.key !== 'Escape') return
+  if (event.key !== 'Escape' && event.key !== 'Esc') return
   const palette = document.querySelector<HTMLElement>('#command-palette')
   const github = document.querySelector<HTMLElement>('#github-dialog')
   const onboardingLayer = document.querySelector<HTMLElement>('#onboarding')
   const inspector = document.querySelector<HTMLElement>('#inspector')
   const helpLayer = document.querySelector<HTMLElement>('#help')
-  if (palette && !palette.hidden) { event.preventDefault(); event.stopImmediatePropagation(); palette.hidden = true; return }
+  if (palette && !palette.hidden) { event.preventDefault(); event.stopImmediatePropagation(); closePopup(palette); return }
   if (github && !github.hidden) { event.preventDefault(); event.stopImmediatePropagation(); github.hidden = true; return }
-  if (onboardingLayer && !onboardingLayer.hidden) { event.preventDefault(); event.stopImmediatePropagation(); onboarding = { ...onboarding, state: 'skipped' }; persistOnboarding(); renderOnboarding(); return }
+  if (onboardingLayer && !onboardingLayer.hidden) { event.preventDefault(); event.stopImmediatePropagation(); closePopup(onboardingLayer); renderOnboarding(); return }
   if (helpLayer && !helpLayer.hidden) { event.preventDefault(); event.stopImmediatePropagation(); helpLayer.hidden = true; handMode = false; applyHandMode?.(); return }
   if (inspector?.classList.contains('open')) { event.preventDefault(); event.stopImmediatePropagation(); inspector.classList.remove('open') }
 }, true)
