@@ -28,7 +28,8 @@
     "verify:release": "node scripts/verify-release.mjs",
     "test:usability": "vitest run tests/onboarding-metrics.test.ts tests/onboarding-usability.test.ts",
     "test:readiness": "vitest run tests/release-readiness.test.ts",
-    "test:evidence": "vitest run tests/compatibility-evidence.test.ts"
+    "test:evidence": "vitest run tests/compatibility-evidence.test.ts",
+    "verify:readiness": "node scripts/verify-readiness.mjs"
   },
   "dependencies": { "three": "^0.178.0" },
   "devDependencies": {

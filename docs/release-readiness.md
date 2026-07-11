@@ -15,3 +15,5 @@ Concrete scan and screenshot measurements live in [`fixtures/compatibility-evide
 | Distribution | partial | `npm run verify:pwa`; signed desktop artifacts remain |
 
 This scorecard is the closure evidence for the maturity epics (#38 and #50) without disguising remaining child issues (#57 and #61). GitHub issues remain the source of truth for scope and acceptance.
+
+CI enforces the scorecard with `npm run verify:readiness`; it fails if a category loses evidence, if verified `simplicio-loop` capture disappears, or if compatibility/distribution are incorrectly marked complete before #61/#57 exit criteria land.
