@@ -17,7 +17,8 @@
     "test:a11y": "vitest run tests/a11y-contract.test.ts",
     "benchmark:render": "vitest run tests/render-benchmark.test.ts",
     "test:compatibility": "vitest run tests/compatibility-matrix.test.ts",
-    "benchmark:webgl": "vitest run tests/instancing-benchmark.test.ts"
+    "benchmark:webgl": "vitest run tests/instancing-benchmark.test.ts",
+    "test:onboarding": "vitest run tests/onboarding-usability.test.ts"
   },
   "dependencies": { "three": "^0.178.0" },
   "devDependencies": {
