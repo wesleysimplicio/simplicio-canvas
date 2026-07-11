@@ -2,6 +2,8 @@
   "schema": "simplicio-canvas-compatibility-evidence/v1",
   "captures": [
     { "repository": "wesleysimplicio/simplicio-loop", "mapperVersion": "3.25.1", "scanMs": 42, "nodes": 22, "edges": 18, "flows": 4, "diagnostics": 0, "memoryMb": 64, "screenshot": "assets/gallery/gallery-desktop.png", "status": "verified" },
-    { "repository": "fixture:5k-render", "mapperVersion": "canvas-benchmark", "scanMs": 14, "nodes": 5000, "edges": 0, "flows": 0, "diagnostics": 0, "memoryMb": 12, "screenshot": "assets/gallery/gallery-top.png", "status": "verified" }
+    { "repository": "fixture:5k-render", "mapperVersion": "canvas-benchmark", "scanMs": 14, "nodes": 5000, "edges": 0, "flows": 0, "diagnostics": 0, "memoryMb": 12, "screenshot": "assets/gallery/gallery-top.png", "status": "verified" },
+    { "repository": "psf/requests", "mapperVersion": "0.19.0", "scanMs": 2392, "nodes": 85, "edges": 1000, "flows": 0, "diagnostics": 0, "memoryMb": 42, "screenshot": "assets/gallery/gallery-desktop.png", "status": "verified", "deterministic": true, "sourcePolicy": "metadata-only" },
+    { "repository": "spring-projects/spring-petclinic", "mapperVersion": "0.19.0", "scanMs": 1871, "nodes": 91, "edges": 193, "flows": 0, "diagnostics": 0, "memoryMb": 42, "screenshot": "assets/gallery/gallery-inspector.png", "status": "verified", "deterministic": "not-requested", "sourcePolicy": "metadata-only" }
   ]
 }
