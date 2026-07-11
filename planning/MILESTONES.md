@@ -2,11 +2,11 @@
 
 ## M1 — Foundation: trustworthy architecture explorer
 
-Goal: turn the current concept into a stable local-first repository explorer. Exit: a user opens a Python/TypeScript folder, sees accurate layered pieces and dependencies, filters/searches, navigates large graphs, and exports/imports a versioned snapshot. Target: v0.2.0. Tasks: SC-001–SC-006.
+Goal: turn the current concept into a stable local-first repository explorer. Exit: a user opens a Python/TypeScript folder and navigates continuously from project object to layers, flows, files and symbols; imports and typed directional relations are accurate; large graphs remain usable; snapshots are versioned. Target: v0.2.0. Tasks: SC-001–SC-006 plus SC-023–SC-025.
 
 ## M2 — Compose: safe visual programming
 
-Goal: allow puzzle operations to describe real, reviewable code changes. Exit: create/move/connect/rename operations produce a deterministic plan and diff preview; invalid architecture is rejected; apply is explicit and undoable. Target: v0.3.0. Tasks: SC-007–SC-012.
+Goal: allow puzzle operations to describe real, reviewable code changes. Exit: create/move/connect/rename/reverse-arrow operations and embedded edits produce a deterministic plan and diff preview; invalid architecture is rejected; apply is explicit and undoable. Target: v0.3.0. Tasks: SC-007–SC-012 plus SC-026–SC-027.
 
 ## M3 — Embed: VS Code and Cursor
 
