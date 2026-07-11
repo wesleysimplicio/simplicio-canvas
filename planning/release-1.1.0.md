@@ -1,6 +1,6 @@
 # Release 1.1.0 evidence
 
-Release: [v1.1.0](https://github.com/wesleysimplicio/simplicio-canvas/releases/tag/v1.1.0)
+Release: [v1.2.0](https://github.com/wesleysimplicio/simplicio-canvas/releases/tag/v1.2.0)
 
 The release adds the first renderer-neutral domain layer around the existing Three.js MVP:
 
@@ -13,7 +13,7 @@ The release adds the first renderer-neutral domain layer around the existing Thr
 Verification performed against the bundled `wesleysimplicio/simplicio-loop` example:
 
 ```text
-npm test                 81 tests passed
+npm test                 102 tests passed
 npm run build            passed
 npm run build:extension  passed
 python3 scripts/check.py --core-gate (simplicio-loop) passed

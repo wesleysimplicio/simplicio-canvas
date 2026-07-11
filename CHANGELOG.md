@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.0 — 2026-07-11
+
+- Added Mapper Mermaid/JSON flow parsing, 15 selectable locales, privacy snapshot guards and renderer LOD helpers.
+- Added opt-in telemetry, redacted runtime traces, architecture policy/SARIF, multi-repository manifests, recovery snapshots, onboarding and offline dependency intelligence contracts.
+- Added guarded editor workspace, source control, terminal/run-debug adapters, edge refactor proposals, workspace preferences and host-side extension apply gates.
+- Added real Playwright screenshot gallery and expanded validation to 102 tests.
+
 ## 1.1.0 — 2026-07-11
 
 - Added versioned graph schema, stable identities, Python/TypeScript scanning, configurable classification and semantic explorer contracts.
