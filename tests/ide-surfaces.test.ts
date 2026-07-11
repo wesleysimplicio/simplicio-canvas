@@ -8,6 +8,7 @@ import { BrowserTerminalAdapter, GuardedProcessAdapter, TERMINAL_CONFIRMATION, v
 import { createMonacoLoader, LazyEditorHost } from '../src/domain/lazy-editor'
 import { IncrementalEditorController, findInEditor, syntaxDiagnostics } from '../src/domain/editor-services'
 import { WorkspaceCrudController } from '../src/domain/workspace-crud'
+import { createPublisherReceipt, verifyArtifact, type DistributionArtifact } from '../src/domain/distribution-contract'
 import { boundRunOutput, createRunSession, finishRunSession, restartRunSession, startRunSession, stopRunSession, validateLaunchConfiguration } from '../src/domain/run-debug'
 
 const graph = buildArchitectureGraph(['src/a.ts', 'src/b.ts', 'tests/a.test.ts'])
@@ -111,5 +112,11 @@ describe('IDE surface contracts', () => {
   it('gates Explorer CRUD by trust/path and supports undo receipts', async () => {
     const calls: string[] = []; const adapter = { create: async (path: string) => { calls.push(`create:${path}`) }, rename: async (path: string, next: string) => { calls.push(`rename:${path}->${next}`) }, delete: async (path: string) => { calls.push(`delete:${path}`) } }
     const controller = new WorkspaceCrudController(trust, adapter); expect((await controller.create('src/new.ts', 'export {}')).accepted).toBe(true); expect(calls[0]).toBe('create:/workspace/src/new.ts'); expect((await controller.undo()).accepted).toBe(true); expect(calls[1]).toBe('delete:/workspace/src/new.ts'); expect((await controller.rename('../secret.ts', 'src/x.ts')).accepted).toBe(false); expect((await new WorkspaceCrudController({ trusted: false, root: '/workspace' }, adapter).create('src/x.ts')).detail).toContain('trust')
+  })
+
+  it('verifies release checksums and publisher signatures without trusting intent', async () => {
+    const sha256 = 'a'.repeat(64); const artifact: DistributionArtifact = { name: 'simplicio-canvas', version: '2.4.0', platform: 'web', bytes: 42, sha256, signature: 'sig', signer: 'release-key' }
+    expect((await verifyArtifact(artifact, 'b'.repeat(64))).status).toBe('invalid'); expect((await verifyArtifact({ ...artifact, signature: undefined, signer: undefined }, sha256)).status).toBe('checksum-only')
+    const receipt = await createPublisherReceipt('2.4.0', [artifact], { 'simplicio-canvas:web': sha256 }, { verify: async (payload, signature, signer) => payload.includes('simplicio-canvas') && signature === 'sig' && signer === 'release-key' }); expect(receipt.artifacts[0].status).toBe('signed')
   })
 })
