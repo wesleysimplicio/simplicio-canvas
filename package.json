@@ -10,10 +10,12 @@
     "build:extension": "tsc --project extension/tsconfig.json --noEmit",
     "deploy:demo": "./scripts/deploy-demo.sh",
     "bootstrap": "node scripts/bootstrap.mjs --dry-run",
+    "eval:transformation": "vitest run tests/m3-m4-contracts.test.ts",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:privacy": "vitest run tests/privacy.test.ts",
-    "test:a11y": "vitest run tests/a11y-contract.test.ts"
+    "test:a11y": "vitest run tests/a11y-contract.test.ts",
+    "benchmark:render": "vitest run tests/render-benchmark.test.ts"
   },
   "dependencies": { "three": "^0.178.0" },
   "devDependencies": {
