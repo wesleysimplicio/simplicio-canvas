@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.2.1 — 2026-07-11
+
+- Fix global `Escape` handling so onboarding, dialogs, command palette, help and inspector popups close reliably.
+
 ## 2.2.0 — 2026-07-11
 
 - Add installable offline-first PWA manifest and versioned service worker cache.

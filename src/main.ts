@@ -83,6 +83,19 @@ document.querySelector('#onboarding-next')!.addEventListener('click', () => { on
 document.querySelector('#onboarding-skip')!.addEventListener('click', () => { onboarding = { ...onboarding, state: 'skipped' }; persistOnboarding(); renderOnboarding() })
 document.querySelector('#onboarding-reset')!.addEventListener('click', () => { onboarding = { ...resetOnboarding(), state: 'active' }; persistOnboarding(); renderOnboarding() })
 renderOnboarding()
+addEventListener('keydown', (event) => {
+  if (event.key !== 'Escape') return
+  const palette = document.querySelector<HTMLElement>('#command-palette')
+  const github = document.querySelector<HTMLElement>('#github-dialog')
+  const onboardingLayer = document.querySelector<HTMLElement>('#onboarding')
+  const inspector = document.querySelector<HTMLElement>('#inspector')
+  const helpLayer = document.querySelector<HTMLElement>('#help')
+  if (palette && !palette.hidden) { event.preventDefault(); event.stopImmediatePropagation(); palette.hidden = true; return }
+  if (github && !github.hidden) { event.preventDefault(); event.stopImmediatePropagation(); github.hidden = true; return }
+  if (onboardingLayer && !onboardingLayer.hidden) { event.preventDefault(); event.stopImmediatePropagation(); onboarding = { ...onboarding, state: 'skipped' }; persistOnboarding(); renderOnboarding(); return }
+  if (helpLayer && !helpLayer.hidden) { event.preventDefault(); event.stopImmediatePropagation(); helpLayer.hidden = true; handMode = false; applyHandMode?.(); return }
+  if (inspector?.classList.contains('open')) { event.preventDefault(); event.stopImmediatePropagation(); inspector.classList.remove('open') }
+}, true)
 const canvas = document.querySelector('canvas')!; const scene = new THREE.Scene(); scene.background = new THREE.Color('#07100f'); scene.fog = new THREE.FogExp2('#07100f', .018)
 const camera = new THREE.PerspectiveCamera(42, 1, .1, 300); camera.position.set(18, 18, 29)
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true }); renderer.setPixelRatio(Math.min(devicePixelRatio, 2)); renderer.shadowMap.enabled = true
