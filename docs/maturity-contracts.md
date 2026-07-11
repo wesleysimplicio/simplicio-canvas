@@ -16,6 +16,7 @@ The Canvas keeps maturity features renderer-independent and local-first. The con
 | `dependency-intelligence.ts` | Optional local CycloneDX/SPDX metadata enriches licenses; npm-audit/OSV-shaped files add vulnerability IDs; CODEOWNERS adds ownership. Sources are recorded and no network lookup is implicit. | `tests/maturity-contracts.test.ts` |
 | `runtime-trace.ts` | Opt-in redacted spans remain distinct from static edges; correlation reports matched, unexpected and unused-static paths with confidence. | `tests/maturity-contracts.test.ts` |
 | `architecture-policy.ts` | Policy findings can be captured as a versioned baseline, suppressed only by exact finding ID, and re-exported as SARIF; new findings remain visible. | `tests/maturity-contracts.test.ts` |
+| `multi-repo.ts` | The bundled landscape fixture keeps four repositories, revisions, access state and typed cross-repository evidence visible even when clones are unavailable. | `tests/maturity-contracts.test.ts` |
 
 These are integration-ready foundations, not claims that the browser can execute processes, access private repositories, ingest production telemetry or mutate source. Those capabilities require an explicit trusted-host adapter and remain separate follow-up work.
 
