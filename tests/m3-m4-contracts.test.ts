@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { buildArchitectureGraph } from '../src/domain/architecture'
-import { CANVAS_SDK_VERSION, createMemoryStore, mountCanvas } from '../src/domain/canvas-sdk'
+import { CANVAS_SDK_VERSION, createMemoryStore, mountCanvas, validateCapabilityManifest } from '../src/domain/canvas-sdk'
 import { parseCanvasMessage, strictCsp } from '../src/domain/extension-protocol'
 import { createSelectionSync } from '../src/domain/selection-sync'
 import { IncrementalWorkspaceWatcher } from '../src/domain/workspace-watcher'
@@ -19,6 +19,11 @@ describe('M3 canvas and extension contracts', () => {
     canvas.select({ nodeId: graph.nodes[0].id, path: graph.nodes[0].path })
     expect(seen).toEqual([graph.nodes[0].path]); expect(canvas.getSelection().nodeId).toBe(graph.nodes[0].id)
     canvas.dispose(); canvas.select({ path: 'ignored.ts' }); expect(canvas.getSelection().path).toBe(graph.nodes[0].path)
+  })
+
+  it('validates extension capabilities and explicit permissions', () => {
+    expect(validateCapabilityManifest({ id: 'mapper', version: '1.0.0', capabilities: ['analyzer'], permissions: ['read-workspace'] })).toEqual([])
+    expect(validateCapabilityManifest({ id: 'Bad Name', version: '1', capabilities: [], permissions: ['write-workspace'] })).toHaveLength(4)
   })
 
   it('validates typed extension messages and rejects malformed payloads', () => {
