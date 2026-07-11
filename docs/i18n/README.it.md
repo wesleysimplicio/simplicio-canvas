@@ -4,7 +4,7 @@
 
 Programmazione visuale local-first: apri una cartella ed esplora progetti, livelli, flussi, file e import come pezzi collegati in un Canvas Three.js ispirato a VS Code.
 
-The default example is the safe snapshot of [`wesleysimplicio/simplicio-loop`](https://github.com/wesleysimplicio/simplicio-loop). The planned bootstrap also prepares `simplicio-mapper` and the local `simplicio-loop` skill.
+L’esempio predefinito è uno snapshot sicuro di [`wesleysimplicio/simplicio-loop`](https://github.com/wesleysimplicio/simplicio-loop). Il bootstrap previsto prepara anche `simplicio-mapper` e la skill locale `simplicio-loop`.
 
 ```bash
 git clone https://github.com/wesleysimplicio/simplicio-canvas.git
@@ -16,4 +16,3 @@ MVP: cartella locale, linguaggi e import, pezzi mobili, navigazione 3D, Explorer
 ![Simplicio Canvas IDE](../../output/playwright/vscode-shell-desktop.png)
 
 [Roadmap](https://github.com/wesleysimplicio/simplicio-canvas/issues) · [MIT](../../LICENSE)
-

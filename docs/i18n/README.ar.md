@@ -4,7 +4,7 @@
 
 برمجة مرئية محلية أولاً: افتح مجلداً وشاهد المشاريع والطبقات والتدفقات والملفات والاستيرادات كقطع مترابطة في Canvas مبني بـ Three.js داخل بيئة شبيهة بـ VS Code.
 
-The default example is the safe snapshot of [`wesleysimplicio/simplicio-loop`](https://github.com/wesleysimplicio/simplicio-loop). The planned bootstrap also prepares `simplicio-mapper` and the local `simplicio-loop` skill.
+المثال الافتراضي هو لقطة آمنة من [`wesleysimplicio/simplicio-loop`](https://github.com/wesleysimplicio/simplicio-loop). ويجهّز الإقلاع المخطط أيضاً `simplicio-mapper` ومهارة `simplicio-loop` المحلية.
 
 ```bash
 git clone https://github.com/wesleysimplicio/simplicio-canvas.git
@@ -16,4 +16,3 @@ cd simplicio-canvas && npm install && npm run dev
 ![Simplicio Canvas IDE](../../output/playwright/vscode-shell-desktop.png)
 
 [Roadmap](https://github.com/wesleysimplicio/simplicio-canvas/issues) · [MIT](../../LICENSE)
-

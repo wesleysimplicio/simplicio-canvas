@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { ACTIVE_LOCALES, ALL_LOCALES, localeLabel, t } from '../src/domain/i18n'
+import { ACTIVE_LOCALES, ALL_LOCALES, localeLabel, messages, t } from '../src/domain/i18n'
 
 describe('Canvas UI locales', () => {
   it('activates all fifteen supported Simplicio locales', () => {
@@ -14,4 +14,18 @@ describe('Canvas UI locales', () => {
     expect(t('pt-BR', 'openFolder')).toBe('ABRIR PASTA')
     expect(t('es', 'openFolder')).toBe('ABRIR CARPETA')
   })
+
+  it('has no missing catalog keys and translates the visible launch surface', () => {
+    const keys = Object.keys(messages.en)
+    for (const locale of ACTIVE_LOCALES) {
+      expect(Object.keys(messages[locale])).toEqual(expect.arrayContaining(keys))
+      expect(t(locale, 'openFolder')).toBeTruthy()
+      expect(t(locale, 'selectPiece')).toBeTruthy()
+      expect(t(locale, 'cloneDescription')).toBeTruthy()
+      expect(t(locale, 'dependencies')).toBeTruthy()
+      expect(t(locale, 'localBridgeUnavailable')).toBeTruthy()
+    }
+    for (const locale of ACTIVE_LOCALES.filter((item) => item !== 'en')) expect(t(locale, 'openFolder')).not.toBe(t('en', 'openFolder'))
+  })
+
 })
