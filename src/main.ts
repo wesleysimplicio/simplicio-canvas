@@ -10,7 +10,7 @@ import { nextCameraView, type CameraView } from './domain/camera-view'
 import { responsiveLayout } from './domain/responsive-layout'
 import { DEFAULT_WORKSPACE, IDE_ACTIVITIES, nextActivity, type ActivityId } from './domain/ide-shell'
 import { normalizeGitHubRepository } from './domain/github-import'
-import { ACTIVE_LOCALES, ALL_LOCALES, localeLabel, t, type Locale } from './domain/i18n'
+import { ACTIVE_LOCALES, ALL_LOCALES, isRtlLocale, localeLabel, t, type Locale } from './domain/i18n'
 import { PUBLIC_DEMO_POLICY } from './domain/demo-policy'
 import './style.css'
 import './analysis.css'
@@ -44,7 +44,7 @@ if (!ACTIVE_LOCALES.includes(currentLocale)) currentLocale = 'pt-BR'
 const localeSelect = document.querySelector<HTMLSelectElement>('#locale-select')!
 localeSelect.value = currentLocale
 function applyLocale(locale: Locale) {
-  currentLocale = locale; localStorage.setItem('simplicio-canvas.locale', locale); document.documentElement.lang = locale
+  currentLocale = locale; localStorage.setItem('simplicio-canvas.locale', locale); document.documentElement.lang = locale; document.documentElement.dir = isRtlLocale(locale) ? 'rtl' : 'ltr'
   const setText = (selector: string, key: string) => { const element = document.querySelector(selector); if (element) element.textContent = t(locale, key) }
   const setLabelText = (selector: string, key: string) => { const element = document.querySelector(selector); if (!element) return; const textNode = Array.from(element.childNodes).find((node) => node.nodeType === Node.TEXT_NODE); if (textNode) textNode.textContent = t(locale, key); else element.insertBefore(document.createTextNode(t(locale, key)), element.firstChild) }
   setText('#open-github', 'github'); setLabelText('#import-map-label', 'importMap'); setText('#open-project', 'openFolder'); setText('#reset', 'reset')

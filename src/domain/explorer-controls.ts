@@ -9,6 +9,12 @@ export function clusterExplorerItems<T extends ExplorerItem>(items: T[], size = 
   const groups = new Map<string, T[]>(); for (const item of items) { const key = item.path?.split('/')[0] || item.layer || 'root'; const group = groups.get(key) ?? []; group.push(item); groups.set(key, group) }
   return [...groups.entries()].map(([key, group]) => ({ id: `cluster:${key}`, key, count: group.length, items: group.slice(0, size) })).sort((a, b) => a.key.localeCompare(b.key))
 }
+/** Stable cluster identity used by the renderer so re-layouts do not jump. */
+export function clusterKey(item: ExplorerItem): string { return item.path?.split('/')[0] || item.layer || 'root' }
+export function expandCluster<T extends ExplorerItem>(cluster: Cluster<T>, limit = cluster.count): T[] { return cluster.items.slice(0, Math.max(0, limit)) }
+export type RenderDetail = 'cluster' | 'label' | 'file' | 'symbol'
+/** Map normalized camera scale to deterministic level-of-detail. */
+export function renderDetail(scale: number): RenderDetail { const value = Math.max(0, Math.min(1, scale)); return value < .2 ? 'cluster' : value < .45 ? 'label' : value < .75 ? 'file' : 'symbol' }
 export function minimapBounds(items: Array<{ x: number; z: number }>): { minX: number; maxX: number; minZ: number; maxZ: number } {
   if (!items.length) return { minX: 0, maxX: 1, minZ: 0, maxZ: 1 }
   return { minX: Math.min(...items.map((item) => item.x)), maxX: Math.max(...items.map((item) => item.x)), minZ: Math.min(...items.map((item) => item.z)), maxZ: Math.max(...items.map((item) => item.z)) }

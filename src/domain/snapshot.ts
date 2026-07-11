@@ -4,5 +4,7 @@ export function exportSnapshot(graph: CanonicalGraph, now = new Date().toISOStri
 export function assertPrivateSnapshot(snapshot: SnapshotEnvelope): void {
   const serialized = serializeGraph(snapshot.graph)
   if (/password|api[_-]?key|secret|token|private[_-]?key/i.test(serialized)) throw new Error('Snapshot contains a secret-like field')
+  if (/(?:^|["/:])(?:Users|home|private|var\/folders|AppData|\.ssh)(?:["/:]|\\)/i.test(serialized)) throw new Error('Snapshot contains an absolute or private path')
+  if (!snapshot.provenance?.source || !snapshot.provenance?.generatedAt) throw new Error('Snapshot provenance is required')
   if (snapshot.format !== 'simplicio-canvas-snapshot' || snapshot.version !== 1) throw new Error('Unsupported snapshot format')
 }
