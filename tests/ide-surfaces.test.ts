@@ -7,6 +7,7 @@ import { createReadOnlySourceControlAdapter, createSourceControlController, vali
 import { BrowserTerminalAdapter, GuardedProcessAdapter, TERMINAL_CONFIRMATION, validateTerminalRequest } from '../src/domain/terminal-adapter'
 import { LazyEditorHost } from '../src/domain/lazy-editor'
 import { IncrementalEditorController, findInEditor, syntaxDiagnostics } from '../src/domain/editor-services'
+import { WorkspaceCrudController } from '../src/domain/workspace-crud'
 import { boundRunOutput, createRunSession, finishRunSession, restartRunSession, startRunSession, stopRunSession, validateLaunchConfiguration } from '../src/domain/run-debug'
 
 const graph = buildArchitectureGraph(['src/a.ts', 'src/b.ts', 'tests/a.test.ts'])
@@ -99,5 +100,10 @@ describe('IDE surface contracts', () => {
   it('persists preferences and rejects conflicting remappable shortcuts', () => {
     const data = new Map<string, string>(); const storage = { getItem: (key: string) => data.get(key) ?? null, setItem: (key: string, value: string) => { data.set(key, value) }, removeItem: (key: string) => { data.delete(key) } }
     const store = new PreferencesStore(storage); expect(store.setShortcut('canvas.open', 'Ctrl+Shift+O').shortcuts['canvas.open']).toBe('ctrl+shift+o'); expect(() => store.setShortcut('canvas.search', 'ctrl+shift+o')).toThrow('conflicts'); const exported = store.export(); store.reset(); expect(store.get().shortcuts['canvas.open']).toBe(DEFAULT_PREFERENCES.shortcuts['canvas.open']); expect(store.import(exported).shortcuts['canvas.open']).toBe('ctrl+shift+o')
+  })
+
+  it('gates Explorer CRUD by trust/path and supports undo receipts', async () => {
+    const calls: string[] = []; const adapter = { create: async (path: string) => { calls.push(`create:${path}`) }, rename: async (path: string, next: string) => { calls.push(`rename:${path}->${next}`) }, delete: async (path: string) => { calls.push(`delete:${path}`) } }
+    const controller = new WorkspaceCrudController(trust, adapter); expect((await controller.create('src/new.ts', 'export {}')).accepted).toBe(true); expect(calls[0]).toBe('create:/workspace/src/new.ts'); expect((await controller.undo()).accepted).toBe(true); expect(calls[1]).toBe('delete:/workspace/src/new.ts'); expect((await controller.rename('../secret.ts', 'src/x.ts')).accepted).toBe(false); expect((await new WorkspaceCrudController({ trusted: false, root: '/workspace' }, adapter).create('src/x.ts')).detail).toContain('trust')
   })
 })
