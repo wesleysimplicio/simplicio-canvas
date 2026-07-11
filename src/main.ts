@@ -2,14 +2,16 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { buildArchitectureGraph, LAYERS, PIECES, type ArchitectureGraph, type ArchitectureNode } from './domain/architecture'
 import { SIMPLICIO_LOOP_PATHS } from './example'
+import { analyzeProject, type ProjectAnalysis, type SourceFileInput } from './domain/analyzer'
 import './style.css'
+import './analysis.css'
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <header><div class="brand"><span class="mark">S/</span><div><b>SIMPLICIO CANVAS</b><small>software assembly space · alpha 01</small></div></div>
-  <div class="actions"><label class="folder">＋ ABRIR PROJETO<input id="folder" type="file" webkitdirectory multiple></label><button id="reset">EXEMPLO SIMPLICIO-LOOP</button></div></header>
-  <main><aside><p class="eyebrow">CAMADAS</p><div id="legend"></div><p class="eyebrow gap">PEÇAS</p><div id="pieces"></div></aside>
+  <div class="actions"><label class="mapper">IMPORTAR MAPA<input id="mapper-file" type="file" accept=".json,application/json"></label><label class="folder">＋ ABRIR PROJETO<input id="folder" type="file" webkitdirectory multiple></label><button id="reset">EXEMPLO SIMPLICIO-LOOP</button></div></header>
+  <main><aside><p class="eyebrow">CAMADAS</p><div id="legend"></div><p class="eyebrow gap">LINGUAGENS</p><div id="languages"><span class="muted">Abra uma pasta para analisar</span></div><p class="eyebrow gap">PEÇAS</p><div id="pieces"></div></aside>
   <section id="stage"><canvas></canvas><div class="stage-label"><span>ARQUITETURA / VISÃO EXPLODIDA</span><strong id="project-name">simplicio-loop · snapshot seguro</strong></div>
-  <div class="hint">arraste para orbitar · scroll para zoom · clique numa peça</div></section>
+  <div id="scan-status" class="scan-status" hidden><i></i><span>ANALISANDO PROJETO…</span></div><div class="hint">arraste para orbitar · scroll para zoom · clique numa peça</div></section>
   <aside class="inspector"><p class="eyebrow">INSPECTOR</p><div id="selection"><div class="empty-orbit">◌</div><h2>Selecione uma peça</h2><p>Veja o papel, caminho e encaixes do objeto.</p></div></aside></main>
   <footer><span id="stats"></span><span><i class="pulse"></i> FLUXOS ATIVOS</span><span>LOCAL-FIRST · NENHUM CÓDIGO ENVIADO</span></footer>`
 
@@ -19,7 +21,7 @@ const renderer = new THREE.WebGLRenderer({ canvas, antialias: true }); renderer.
 const controls = new OrbitControls(camera, canvas); controls.enableDamping = true; controls.target.set(10, 0, 1); controls.maxPolarAngle = Math.PI / 2.05
 scene.add(new THREE.HemisphereLight('#d6fff5', '#06100d', 2.2)); const key = new THREE.DirectionalLight('#fff1d4', 4); key.position.set(8, 18, 10); key.castShadow = true; scene.add(key)
 const grid = new THREE.GridHelper(60, 60, '#19352f', '#10241f'); scene.add(grid)
-let group = new THREE.Group(); scene.add(group); const raycaster = new THREE.Raycaster(); const pointer = new THREE.Vector2(); const meshNodes = new Map<THREE.Object3D, ArchitectureNode>()
+let group = new THREE.Group(); scene.add(group); const raycaster = new THREE.Raycaster(); const pointer = new THREE.Vector2(); const meshNodes = new Map<THREE.Object3D, ArchitectureNode>(); let analysis: ProjectAnalysis | undefined
 
 function puzzleGeometry(kind: string) {
   const shape = new THREE.Shape(); const w = 3.6, h = 1.65, r = kind === 'entity' ? .48 : .34
@@ -38,10 +40,23 @@ function renderGraph(graph: ArchitectureGraph) {
 }
 document.querySelector('#legend')!.innerHTML=Object.entries(LAYERS).map(([id,l])=>`<button data-layer="${id}"><i style="--c:${l.color}"></i><span>${l.label}<small>${l.role}</small></span></button>`).join('')
 document.querySelector('#pieces')!.innerHTML=Object.entries(PIECES).slice(0,9).map(([id,p])=>`<span class="chip">${p.label}<small>${id==='screen'?'◖':id==='entity'?'◆':'⊕'}</small></span>`).join('')
-function load(paths:string[],name:string){renderGraph(buildArchitectureGraph(paths));document.querySelector('#project-name')!.textContent=name}
+function load(paths:string[],name:string,current?:ProjectAnalysis){
+  analysis=current; const graph=buildArchitectureGraph(paths); const ids=new Map(graph.nodes.map((node)=>[node.path,node.id]))
+  if(current) graph.edges=current.connections.filter((edge)=>!edge.external&&ids.has(edge.source)&&ids.has(edge.target)).map((edge)=>({from:ids.get(edge.source)!,to:ids.get(edge.target)!,type:'depends'}))
+  renderGraph(graph);document.querySelector('#project-name')!.textContent=name
+  document.querySelector('#languages')!.innerHTML=current?Object.entries(current.languages).sort((a,b)=>b[1]-a[1]).map(([language,count])=>`<span class="language"><b>${language}</b><small>${count}</small></span>`).join(''):'<span class="muted">Snapshot sem conteúdo</span>'
+  if(current) document.querySelector('#stats')!.textContent=`${current.files.length} ARQUIVOS · ${current.connections.length} IMPORTS · ${Object.keys(current.languages).length} LINGUAGENS · ${current.skipped} IGNORADOS`
+}
 load(SIMPLICIO_LOOP_PATHS,'simplicio-loop · snapshot seguro')
-document.querySelector<HTMLInputElement>('#folder')!.onchange=(e)=>{const files=Array.from((e.target as HTMLInputElement).files??[]);if(files.length)load(files.map(f=>(f as File & {webkitRelativePath:string}).webkitRelativePath||f.name),files[0].webkitRelativePath.split('/')[0])}
+document.querySelector<HTMLInputElement>('#folder')!.onchange=async(e)=>{
+  const browserFiles=Array.from((e.target as HTMLInputElement).files??[]) as Array<File & {webkitRelativePath:string}>;if(!browserFiles.length)return
+  const status=document.querySelector<HTMLElement>('#scan-status')!;status.hidden=false;await new Promise(requestAnimationFrame)
+  const root=browserFiles[0].webkitRelativePath.split('/')[0];const inputs:SourceFileInput[]=[]
+  for(const file of browserFiles){const path=file.webkitRelativePath.split('/').slice(1).join('/')||file.name;let content='';if(file.size<=1_000_000)try{content=await file.text()}catch{content=''}inputs.push({path,content,size:file.size})}
+  const result=analyzeProject(root,inputs);load(result.files.map(file=>file.path),root,result);status.hidden=true
+}
+document.querySelector<HTMLInputElement>('#mapper-file')!.onchange=async(e)=>{const file=(e.target as HTMLInputElement).files?.[0];if(!file)return;const raw=JSON.parse(await file.text()) as unknown;const found=new Set<string>();const visit=(value:unknown)=>{if(Array.isArray(value))value.forEach(visit);else if(value&&typeof value==='object')for(const [key,item] of Object.entries(value)){if((key==='path'||key==='file')&&typeof item==='string'&&/\.[a-z0-9]+$/i.test(item))found.add(item);visit(item)}};visit(raw);load([...found],`mapper · ${file.name}`)}
 document.querySelector('#reset')!.addEventListener('click',()=>load(SIMPLICIO_LOOP_PATHS,'simplicio-loop · snapshot seguro'))
-canvas.addEventListener('click',(e)=>{const rect=canvas.getBoundingClientRect();pointer.set((e.clientX-rect.left)/rect.width*2-1,-(e.clientY-rect.top)/rect.height*2+1);raycaster.setFromCamera(pointer,camera);const hit=raycaster.intersectObjects([...meshNodes.keys()])[0];if(!hit)return;const node=meshNodes.get(hit.object)!;document.querySelector('#selection')!.innerHTML=`<div class="piece-icon" style="--c:${LAYERS[node.layer].color}">⊕</div><p class="tag">${node.layer} / ${node.kind}</p><h2>${node.name}</h2><code>${node.path}</code><dl><dt>ENTRADA</dt><dd>${PIECES[node.kind].socket}</dd><dt>SAÍDA</dt><dd>${PIECES[node.kind].tab}</dd></dl>`})
+canvas.addEventListener('click',(e)=>{const rect=canvas.getBoundingClientRect();pointer.set((e.clientX-rect.left)/rect.width*2-1,-(e.clientY-rect.top)/rect.height*2+1);raycaster.setFromCamera(pointer,camera);const hit=raycaster.intersectObjects([...meshNodes.keys()])[0];if(!hit)return;const node=meshNodes.get(hit.object)!;const file=analysis?.files.find(item=>item.path===node.path);const incoming=analysis?.connections.filter(item=>item.target===node.path&&!item.external)??[];const imports=file?.imports??[];document.querySelector('#selection')!.innerHTML=`<div class="piece-icon" style="--c:${LAYERS[node.layer].color}">⊕</div><p class="tag">${node.layer} / ${node.kind}${file?` / ${file.language}`:''}</p><h2>${node.name}</h2><code>${node.path}</code>${file?`<dl><dt>LINHAS</dt><dd>${file.lines}</dd><dt>TAMANHO</dt><dd>${(file.size/1024).toFixed(1)} KB</dd><dt>IMPORTS</dt><dd>${imports.length}</dd><dt>IMPORTADO POR</dt><dd>${incoming.length}</dd></dl><p class="subhead">DEPENDÊNCIAS</p><div class="imports">${imports.length?imports.map(item=>`<span class="${item.external?'external':''}">→ ${item.specifier}<small>${item.resolvedPath??'pacote externo'}</small></span>`).join(''):'<em>nenhuma detectada</em>'}</div>`:`<dl><dt>ENTRADA</dt><dd>${PIECES[node.kind].socket}</dd><dt>SAÍDA</dt><dd>${PIECES[node.kind].tab}</dd></dl>`}`})
 function resize(){const el=document.querySelector('#stage')!;renderer.setSize(el.clientWidth,el.clientHeight,false);camera.aspect=el.clientWidth/el.clientHeight;camera.updateProjectionMatrix()}addEventListener('resize',resize);resize()
 function animate(t:number){controls.update();meshNodes.forEach((n,m)=>m.position.y=(m.userData.baseY??1)+Math.sin(t*.001+n.x)*.045);renderer.render(scene,camera);requestAnimationFrame(animate)}requestAnimationFrame(animate)

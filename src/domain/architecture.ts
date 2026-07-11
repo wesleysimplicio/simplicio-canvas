@@ -51,7 +51,7 @@ export function classifyPiece(rawPath: string): PieceKind {
 }
 
 export function buildArchitectureGraph(paths: string[]): ArchitectureGraph {
-  const visible = paths.filter((p) => !/(node_modules|\.git|dist|build|\.venv|__pycache__)/.test(p)).slice(0, 120)
+  const visible = paths.filter((p) => !/(node_modules|\.git|dist|build|\.venv|__pycache__)/.test(p))
   const counters = new Map<LayerId, number>()
   const nodes = visible.map((path, index) => {
     const layer = classifyPath(path); const count = counters.get(layer) ?? 0; counters.set(layer, count + 1)

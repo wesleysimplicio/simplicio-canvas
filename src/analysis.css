@@ -1,0 +1,16 @@
+.mapper { font: 600 11px "DM Mono"; letter-spacing: .06em; color: #8fb2a6; border: 1px solid #2c463e; background: #10201c; padding: 10px 13px; cursor: pointer; }
+.mapper input { display: none; }
+#languages { display: flex; flex-direction: column; gap: 5px; padding: 0 7px; max-height: 145px; overflow: auto; }
+.language { display: flex; justify-content: space-between; align-items: center; font: 9px "DM Mono"; color: #a7c0b7; border-bottom: 1px solid #162a24; padding: 4px 0; }
+.language small { display: grid; place-items: center; min-width: 22px; height: 18px; color: #07100f; background: #67e8a5; }
+.muted { font: 9px "DM Mono"; color: #526d64; line-height: 1.5; }
+.scan-status { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 12px; background: #07100fdd; z-index: 3; font: 10px "DM Mono"; letter-spacing: .14em; color: #bbff3c; }
+.scan-status[hidden] { display: none; }
+.scan-status i { width: 18px; height: 18px; border: 2px solid #29453b; border-top-color: #bbff3c; border-radius: 50%; animation: spin .7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.subhead { margin-top: 22px !important; color: #5f7d73 !important; font: 9px "DM Mono" !important; letter-spacing: .12em; }
+.imports { display: flex; flex-direction: column; gap: 5px; max-height: 230px; overflow: auto; }
+.imports span { padding: 7px; border-left: 2px solid #67e8a5; background: #0d1b17; color: #dff4eb; font: 9px "DM Mono"; overflow-wrap: anywhere; }
+.imports span.external { border-color: #ffb547; }
+.imports small { display: block; color: #5e7a70; margin-top: 4px; }
+.imports em { color: #557168; font: 9px "DM Mono"; }
