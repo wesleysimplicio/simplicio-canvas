@@ -4,7 +4,7 @@
 
 Local-first विज़ुअल प्रोग्रामिंग: कोई फ़ोल्डर खोलें और प्रोजेक्ट, लेयर, फ्लो, फ़ाइल तथा imports को VS Code जैसे Three.js Canvas पर जुड़े ब्लॉक के रूप में देखें।
 
-The default example is the safe snapshot of [`wesleysimplicio/simplicio-loop`](https://github.com/wesleysimplicio/simplicio-loop). The planned bootstrap also prepares `simplicio-mapper` and the local `simplicio-loop` skill.
+डिफ़ॉल्ट उदाहरण [`wesleysimplicio/simplicio-loop`](https://github.com/wesleysimplicio/simplicio-loop) का सुरक्षित स्नैपशॉट है। नियोजित bootstrap `simplicio-mapper` और स्थानीय `simplicio-loop` skill भी तैयार करता है।
 
 ```bash
 git clone https://github.com/wesleysimplicio/simplicio-canvas.git
@@ -16,4 +16,3 @@ MVP: स्थानीय फ़ोल्डर, भाषाएँ और impo
 ![Simplicio Canvas IDE](../../output/playwright/vscode-shell-desktop.png)
 
 [Roadmap](https://github.com/wesleysimplicio/simplicio-canvas/issues) · [MIT](../../LICENSE)
-

@@ -4,7 +4,7 @@
 
 Local-first görsel programlama: bir klasör açın; projeleri, katmanları, akışları, dosyaları ve importları VS Code benzeri bir Three.js Canvas üzerinde bağlı parçalar olarak görün.
 
-The default example is the safe snapshot of [`wesleysimplicio/simplicio-loop`](https://github.com/wesleysimplicio/simplicio-loop). The planned bootstrap also prepares `simplicio-mapper` and the local `simplicio-loop` skill.
+Varsayılan örnek [`wesleysimplicio/simplicio-loop`](https://github.com/wesleysimplicio/simplicio-loop) için güvenli bir anlık görüntüdür. Planlanan bootstrap ayrıca `simplicio-mapper` ve yerel `simplicio-loop` becerisini hazırlar.
 
 ```bash
 git clone https://github.com/wesleysimplicio/simplicio-canvas.git
@@ -16,4 +16,3 @@ MVP: yerel klasör, diller ve importlar, taşınabilir parçalar, 3D gezinme, Ex
 ![Simplicio Canvas IDE](../../output/playwright/vscode-shell-desktop.png)
 
 [Roadmap](https://github.com/wesleysimplicio/simplicio-canvas/issues) · [MIT](../../LICENSE)
-
