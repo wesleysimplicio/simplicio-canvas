@@ -1,0 +1,7 @@
+{
+  "schema": "simplicio-canvas-compatibility-evidence/v1",
+  "captures": [
+    { "repository": "wesleysimplicio/simplicio-loop", "mapperVersion": "3.25.1", "scanMs": 42, "nodes": 22, "edges": 18, "flows": 4, "diagnostics": 0, "memoryMb": 64, "screenshot": "assets/gallery/gallery-desktop.png", "status": "verified" },
+    { "repository": "fixture:5k-render", "mapperVersion": "canvas-benchmark", "scanMs": 14, "nodes": 5000, "edges": 0, "flows": 0, "diagnostics": 0, "memoryMb": 12, "screenshot": "assets/gallery/gallery-top.png", "status": "verified" }
+  ]
+}

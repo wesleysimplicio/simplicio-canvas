@@ -20,13 +20,15 @@
     "verify:compatibility": "node scripts/verify-compatibility.mjs",
     "scan:compatibility": "node scripts/scan-compatibility.mjs --offline",
     "scan:mapper": "node scripts/collect-compatibility-evidence.mjs",
+    "scan:mapper:matrix": "node scripts/scan-matrix-mapper.mjs",
     "verify:artifact": "node scripts/verify-artifact.mjs --require-checksum",
     "benchmark:webgl": "vitest run tests/instancing-benchmark.test.ts",
     "test:onboarding": "vitest run tests/onboarding-usability.test.ts",
     "verify:pwa": "node scripts/verify-pwa.mjs",
     "verify:release": "node scripts/verify-release.mjs",
     "test:usability": "vitest run tests/onboarding-metrics.test.ts tests/onboarding-usability.test.ts",
-    "test:readiness": "vitest run tests/release-readiness.test.ts"
+    "test:readiness": "vitest run tests/release-readiness.test.ts",
+    "test:evidence": "vitest run tests/compatibility-evidence.test.ts"
   },
   "dependencies": { "three": "^0.178.0" },
   "devDependencies": {
