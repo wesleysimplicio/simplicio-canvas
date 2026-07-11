@@ -1,0 +1,8 @@
+node_modules/
+dist/
+coverage/
+.playwright-cli/
+.simplicio/
+output/
+*.log
+.DS_Store
