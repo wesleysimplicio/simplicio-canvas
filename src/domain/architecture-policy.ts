@@ -2,6 +2,7 @@ import type { ArchitectureGraph } from './architecture'
 export type PolicySeverity = 'info' | 'warning' | 'error'
 export interface ArchitecturePolicy { version: 1; name: string; allowedLayers?: Record<string, string[]>; forbiddenCycles?: boolean; ownership?: Record<string, string> }
 export interface PolicyFinding { id: string; rule: string; severity: PolicySeverity; nodeIds: string[]; message: string; evidence: string[]; suppressed?: boolean }
+export const DEFAULT_LAYER_POLICY: ArchitecturePolicy = { version: 1, name: 'layered-default', allowedLayers: { presentation: ['application'], application: ['domain', 'infrastructure', 'tests'], domain: ['infrastructure', 'tests'], infrastructure: ['tests'], tests: [], docs: [], config: [] } }
 export function evaluatePolicy(graph: ArchitectureGraph, policy: ArchitecturePolicy): PolicyFinding[] {
   const findings: PolicyFinding[] = []
   for (const edge of graph.edges) {
