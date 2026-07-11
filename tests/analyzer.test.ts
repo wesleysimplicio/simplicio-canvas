@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { analyzeProject, detectLanguage, extractImports } from '../src/domain/analyzer'
+import { analyzeProject, detectLanguage, extractImports, sourceLines } from '../src/domain/analyzer'
 
 describe('local project analyzer', () => {
   it.each([
@@ -40,5 +40,11 @@ describe('local project analyzer', () => {
     ])
     expect(analysis.files.map((file) => file.path)).toEqual(['src/good.ts'])
     expect(analysis.skipped).toBe(2)
+  })
+
+  it('formats escaped, numbered source for the terminal panel', () => {
+    expect(sourceLines('<main>\nconst x = 1', 2)).toEqual([
+      { number: 1, text: '&lt;main&gt;' }, { number: 2, text: 'const x = 1' },
+    ])
   })
 })
