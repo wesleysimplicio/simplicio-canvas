@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.0 — 2026-07-11
+
+- Add replayable graph revision transitions and safe edge-reversal previews.
+- Add multi-repository landscape fixture with typed cross-repository edges.
+- Add resumable onboarding/recovery usability states.
+- Add VS Code/Cursor host manifest and lifecycle validation scaffold.
+
 ## 2.0.0 — 2026-07-11
 
 - Add real InstancedMesh performance benchmarking and nightly compatibility/render CI.
