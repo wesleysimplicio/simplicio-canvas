@@ -18,3 +18,5 @@ npm run deploy:demo
 ```
 
 The deployment target is `/public_html/simplicio_canvas`. Never add FTP credentials to source, `.env`, shell history, issues or README files.
+
+Live demo: <https://simpleti.com.br/simplicio_canvas/>
