@@ -5,7 +5,7 @@ import { evaluatePolicy, policyToSarif } from '../src/domain/architecture-policy
 import { validateWorkspaceManifest } from '../src/domain/multi-repo'
 import { createWorkspaceSnapshot, recoverWorkspace, validateWorkspaceSnapshot } from '../src/domain/workspace-recovery'
 import { ONBOARDING_STEPS, nextOnboarding, resetOnboarding, type OnboardingProgress } from '../src/domain/onboarding'
-import { analyzeDependencies, dependencySeverity, validateDependencyReport } from '../src/domain/dependency-intelligence'
+import { analyzeDependencies, dependencySeverity, enrichDependencyReport, validateDependencyReport } from '../src/domain/dependency-intelligence'
 import { buildArchitectureGraph } from '../src/domain/architecture'
 import { createCacheKey, inspectWorkspaceCache, MemoryCacheAdapter, repairWorkspaceCache, saveWorkspaceCache } from '../src/domain/workspace-cache'
 
@@ -77,5 +77,9 @@ describe('onboarding and dependency contracts', () => {
     const report = analyzeDependencies([{ path: 'package.json', content: '{"dependencies":{"three":"^0.178.0"},"devDependencies":{"vitest":"^3"}}' }, { path: 'package-lock.json', content: '\n  "node_modules/lodash": {}' }, { path: 'pyproject.toml', content: 'dependencies = [\n  "httpx>=1",\n  "pydantic"\n]' }], 'now')
     expect(report.offline).toBe(true)
     expect(report.dependencies.map((item) => item.name)).toEqual(expect.arrayContaining(['three', 'vitest', 'lodash', 'httpx', 'pydantic']))
+    const enriched = enrichDependencyReport(report, [{ path: 'bom.cdx.json', content: '{"components":[{"name":"three","licenses":[{"license":{"id":"MIT"}}]}]}' }, { path: 'audit.json', content: '{"vulnerabilities":{"three":{"via":[{"id":"CVE-TEST"}]}}}' }, { path: '.github/CODEOWNERS', content: '* @team-security' }])
+    expect(enriched.dependencies.find((item) => item.name === 'three')).toMatchObject({ license: 'MIT', vulnerabilityIds: ['CVE-TEST'], owners: ['@team-security'] })
+    expect(enriched.sources).toEqual(expect.arrayContaining(['bom.cdx.json', 'audit.json']))
+    expect(dependencySeverity(enriched.dependencies.find((item) => item.name === 'three')!)).toBe('critical')
   })
 })
