@@ -6,6 +6,8 @@
 
 <p align="center"><a href="https://simpleti.com.br/simplicio_canvas/"><strong>▶ Open the live Canvas 1.0</strong></a></p>
 
+The hosted URL is a secure, read-only visualization of the bundled `simplicio-loop` example. Clone this repository and run the default build locally when you need folder/GitHub import or editing.
+
 <p align="center">
   <img src="assets/simplicio-canvas-overview.png" alt="Simplicio Canvas renders a software project as connected puzzle pieces in a Three.js workspace" width="920" />
 </p>

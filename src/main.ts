@@ -28,6 +28,14 @@ document.documentElement.classList.toggle('demo-mode', __DEMO_MODE__)
 if (__DEMO_MODE__) {
   document.querySelectorAll<HTMLInputElement | HTMLButtonElement>('#mapper-file, #folder, #open-github, #open-project, #reset').forEach((control) => { control.disabled = true })
   document.addEventListener('keydown', (event) => { if (event.key.toLowerCase() === 'h') event.stopImmediatePropagation() }, true)
+  document.addEventListener('click', (event) => {
+    const target = event.target instanceof Element ? event.target : null
+    if (target?.closest('#open-project, #open-github, #github-submit, #reset, #help-trigger')) { event.preventDefault(); event.stopImmediatePropagation() }
+  }, true)
+  document.addEventListener('change', (event) => {
+    const target = event.target instanceof Element ? event.target : null
+    if (target?.closest('#folder, #mapper-file')) { event.preventDefault(); event.stopImmediatePropagation() }
+  }, true)
 }
 
 let currentLocale: Locale = (localStorage.getItem('simplicio-canvas.locale') as Locale | null) ?? 'pt-BR'

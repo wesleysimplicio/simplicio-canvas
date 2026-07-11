@@ -11,6 +11,6 @@ Simplicio Canvas is now a usable local-first architecture explorer:
 - Use the VS Code-like Explorer, tabs, terminal panel and Inspector shell.
 - Switch the core interface instantly between English, Portuguese, Spanish and Simplified Chinese.
 - Use the responsive phone, tablet and desktop layouts.
-- Keep an optional read-only showcase build while the live HostGator release supports local-folder and public-GitHub import.
+- Publish a locked read-only showcase at the public URL; the full import/edit workflow remains available only in the local developer build.
 
 Validation: 55 automated tests, production build, public HTTPS smoke check and HostGator FTP deployment.

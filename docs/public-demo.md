@@ -1,6 +1,6 @@
 # Public demo deployment
 
-The repository supports two builds. `npm run build:demo` is the intentionally read-only showcase build. The live HostGator release uses the interactive production build: it opens the bundled snapshot, accepts a local folder, and imports public GitHub repositories through the HostGator PHP bridge with bounded files and no credentials.
+The repository supports two builds. `npm run build:demo` is the intentionally read-only showcase build used by the public URL. The default production build remains interactive for local development: it accepts a local folder and can import public GitHub repositories when run on a developer machine.
 
 Build it with:
 
@@ -19,4 +19,6 @@ npm run deploy:demo
 
 The deployment target is `/public_html/simplicio_canvas`. Never add FTP credentials to source, `.env`, shell history, issues or README files.
 
-Live demo: <https://simpleti.com.br/simplicio_canvas/>
+Live demo (read-only): <https://simpleti.com.br/simplicio_canvas/>
+
+The public deployment contains only the bundled `wesleysimplicio/simplicio-loop` snapshot. Import controls, GitHub/network import, source editing, saving, process execution and piece dragging are disabled at build time and at runtime. The public PHP import bridge is intentionally not deployed.
