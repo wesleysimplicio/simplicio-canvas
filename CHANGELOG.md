@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.7.0 — 2026-07-11
+
+- Add local first-run onboarding with skip/reset and persistent progress.
+- Add privacy/accessibility verification gates and reduced-motion/focus-visible support.
+- Add multi-file editor tabs with dirty state and Canvas focus synchronization.
+- Enrich offline dependency intelligence with license, vulnerability and CODEOWNERS metadata.
+
 ## 1.6.0 — 2026-07-11
 
 - Add URL-persisted semantic zoom state with history restoration.
