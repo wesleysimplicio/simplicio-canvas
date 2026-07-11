@@ -42,7 +42,12 @@ npm install
 npm run dev
 ```
 
-Open the local URL, click **Open project**, and select a folder.
+Open the local URL and choose either:
+
+- **Open folder** — authorize a folder already on the machine.
+- **GitHub** — enter a public `owner/repository`; the guarded local Vite bridge performs a shallow clone under `.simplicio/workspaces`, attempts `simplicio-mapper`, then falls back to the Canvas analyzer if Mapper is unavailable.
+
+![GitHub clone and Mapper import dialog](output/playwright/github-import-dialog.png)
 
 The first screen already opens the official `wesleysimplicio/simplicio-loop` example. The planned bootstrap will also prepare `simplicio-mapper` and the installed `simplicio-loop` project skill; until that installer lands, both integrations remain explicit and local-first.
 
