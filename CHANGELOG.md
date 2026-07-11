@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.12.0 — 2026-07-11
+
+- Configure protected Minisign fallback credentials for signed extension releases.
+- Publish and verify a detached VSIX signature and public key alongside the release.
+- Keep Cosign keyless signing preferred, with fail-closed fallback behavior.
+
 ## 2.11.0 — 2026-07-11
 
 - Close the real-repository compatibility issue with an explicit unsupported-at-budget .NET boundary.
