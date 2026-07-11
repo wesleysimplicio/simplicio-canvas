@@ -24,7 +24,8 @@
     "test:onboarding": "vitest run tests/onboarding-usability.test.ts",
     "verify:pwa": "node scripts/verify-pwa.mjs",
     "verify:release": "node scripts/verify-release.mjs",
-    "test:usability": "vitest run tests/onboarding-metrics.test.ts tests/onboarding-usability.test.ts"
+    "test:usability": "vitest run tests/onboarding-metrics.test.ts tests/onboarding-usability.test.ts",
+    "test:readiness": "vitest run tests/release-readiness.test.ts"
   },
   "dependencies": { "three": "^0.178.0" },
   "devDependencies": {
