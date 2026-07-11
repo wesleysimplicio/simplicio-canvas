@@ -4,14 +4,14 @@
   <strong>English</strong> · <a href="docs/i18n/README.pt-BR.md">Português</a> · <a href="docs/i18n/README.es.md">Español</a> · <a href="docs/i18n/README.fr.md">Français</a> · <a href="docs/i18n/README.de.md">Deutsch</a> · <a href="docs/i18n/README.it.md">Italiano</a> · <a href="docs/i18n/README.nl.md">Nederlands</a> · <a href="docs/i18n/README.pl.md">Polski</a> · <a href="docs/i18n/README.ru.md">Русский</a> · <a href="docs/i18n/README.uk.md">Українська</a> · <a href="docs/i18n/README.tr.md">Türkçe</a> · <a href="docs/i18n/README.ar.md">العربية</a> · <a href="docs/i18n/README.hi.md">हिन्दी</a> · <a href="docs/i18n/README.ja.md">日本語</a> · <a href="docs/i18n/README.zh-CN.md">简体中文</a>
 </p>
 
-<p align="center"><a href="https://simpleti.com.br/simplicio_canvas/"><strong>▶ Open the live Canvas 1.0</strong></a></p>
+<p align="center"><a href="https://simpleti.com.br/simplicio_canvas/"><strong>▶ Open the live Canvas 2.9</strong></a></p>
 
 The hosted URL is a secure, read-only visualization of the bundled `simplicio-loop` example. Clone this repository and run the default build locally when you need folder/GitHub import or editing.
 
-The orchestration skill used for the example is available as the Python package [`simplicio-loop==3.25.1`](https://pypi.org/project/simplicio-loop/3.25.1/):
+The orchestration skill used for the example is available as the Python package [`simplicio-loop==3.31.1`](https://pypi.org/project/simplicio-loop/3.31.1/):
 
 ```bash
-python3 -m pip install simplicio-loop==3.25.1
+python3 -m pip install simplicio-loop==3.31.1
 ```
 
 <p align="center">
