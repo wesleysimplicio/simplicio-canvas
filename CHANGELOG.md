@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.8.0 — 2026-07-11
+
+- Add deterministic 5,000-node renderer benchmark and clustering/LOD evidence.
+- Add opt-in static/runtime trace correlation with confidence and unexpected-edge reporting.
+- Add guarded host process streaming and lazy editor-host lifecycle contracts.
+- Add transformation RED/GREEN verification gate and `eval:transformation` command.
+
 ## 1.7.0 — 2026-07-11
 
 - Add local first-run onboarding with skip/reset and persistent progress.
