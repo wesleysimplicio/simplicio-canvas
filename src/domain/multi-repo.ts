@@ -1,7 +1,8 @@
-export interface RepositoryRef { id: string; name: string; root: string; revision: string; branch?: string; dirty: boolean; access: 'available' | 'denied' | 'missing'; language?: string }
+export interface RepositoryRef { id: string; name: string; root: string; revision: string; branch?: string; dirty: boolean; access: 'available' | 'denied' | 'missing'; language?: string; role?: string; status?: string }
 export type CrossRepositoryEdgeType = 'package' | 'api' | 'event' | 'schema' | 'deploys'
+  | 'imports-byte-identical' | 'serves-model-to' | 'feeds' | 'routes-to' | 'scores-before' | 'curates-in' | 'stores-in' | 'recovers-via' | 'verifies' | 'governs' | 'calibrates' | 'motivates'
 export interface CrossRepositoryEdge { id: string; fromRepo: string; toRepo: string; type: CrossRepositoryEdgeType; label?: string; evidence: string[] }
-export interface WorkspaceManifest { version: 1; repositories: RepositoryRef[]; edges: CrossRepositoryEdge[] }
+export interface WorkspaceManifest { version: 1; repositories: RepositoryRef[]; edges: CrossRepositoryEdge[]; boundaries?: string[] }
 export interface WorkspaceLandscapeSummary { repositories: Array<RepositoryRef & { edgeCount: number }>; edges: CrossRepositoryEdge[]; available: number; unavailable: number }
 export const SIMPLICIO_LANDSCAPE_FIXTURE: WorkspaceManifest = { version: 1, repositories: [
   { id: 'canvas', name: 'simplicio-canvas', root: '.', revision: 'demo', branch: 'main', dirty: false, access: 'available', language: 'TypeScript' },

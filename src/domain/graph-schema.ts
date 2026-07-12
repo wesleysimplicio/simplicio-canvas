@@ -1,12 +1,16 @@
 /** Versioned, renderer-agnostic graph contract shared by web, VS Code and Mapper. */
 export const GRAPH_SCHEMA_VERSION = '1.0'
 
-export type GraphNodeKind = 'project' | 'layer' | 'flow' | 'file' | 'class' | 'function' | 'method' | 'symbol'
+export type GraphNodeKind = 'project' | 'layer' | 'flow' | 'file' | 'class' | 'function' | 'method' | 'symbol' | 'repository'
 export type GraphEdgeType = 'import' | 'call' | 'implements' | 'inherits' | 'event' | 'data' | 'read' | 'write' | 'verifies'
 export type EvidenceSource = 'static' | 'runtime' | 'ai'
 
+export type EcosystemEvidenceKind = 'source' | 'test' | 'runtime' | 'receipt' | 'CI' | 'operator' | 'third-seat' | 'paper' | 'documentation'
 export interface GraphProvenance { source: string; generatedAt: string; scanner?: string; snapshot?: string }
-export interface GraphEvidence { source: EvidenceSource; confidence: number; reason: string; location?: { path: string; line?: number; column?: number } }
+/** `ecosystemKind`/`url`/`revision`/`scope` are a compatible extension for ecosystem-graph/v1 evidence classes
+ * (issue #65) — kept separate from `confidence` because a CI result, a research paper and a reported training
+ * metric are different evidence classes, not points on one confidence scale. */
+export interface GraphEvidence { source: EvidenceSource; confidence: number; reason: string; location?: { path: string; line?: number; column?: number }; ecosystemKind?: EcosystemEvidenceKind; url?: string; revision?: string; scope?: string }
 export interface GraphPort { id: string; direction: 'in' | 'out'; contract: string }
 export interface GraphNode { id: string; kind: GraphNodeKind; name: string; path?: string; parentId?: string; layer?: string; ports?: GraphPort[]; evidence?: GraphEvidence[]; position?: { x: number; y: number; z?: number } }
 export interface GraphEdge { id: string; from: string; to: string; type: GraphEdgeType; evidence?: GraphEvidence[]; label?: string }
