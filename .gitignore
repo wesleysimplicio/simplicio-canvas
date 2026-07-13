@@ -6,6 +6,12 @@ extension/artifacts/
 coverage/
 .playwright-cli/
 .simplicio/
+
+# Simplicio task-loop state
+.orchestrator/loop/
+.orchestrator/runs/
+.orchestrator/worktrees/
+.claude/worktrees/
 output/
 *.log
 .DS_Store
