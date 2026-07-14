@@ -16,7 +16,7 @@ export function generateFiles(graph: ArchitectureGraph, operations: VisualOperat
   for (const operation of operations.flatMap((item) => item.type === 'batch' ? item.operations : [item])) {
     if (operation.type === 'create') result.set(operation.node.path, { path: operation.node.path, content: adapter.create(operation.node.path, operation.node.name.replace(/[^A-Za-z0-9_$]/g, '') || 'GeneratedPiece'), language })
     if (operation.type === 'rename') { const current = graph.nodes.find((node) => node.id === operation.nodeId); if (current) { const prior = result.get(current.path) ?? { path: current.path, content: '', language }; result.set(current.path, { ...prior, content: adapter.rename(prior.content, current.name, operation.name) }) } }
-    if (operation.type === 'connect') { const target = graph.nodes.find((node) => node.id === operation.edge.to); const source = graph.nodes.find((node) => node.id === operation.edge.from); if (target && source) { const prior = result.get(target.path) ?? { path: target.path, content: '', language }; result.set(target.path, { ...prior, content: adapter.connect(prior.content, `./${source.path.replace(/\\.(tsx?|jsx?|py)$/, '')}`, source.name) }) } }
+    if (operation.type === 'connect') { const target = graph.nodes.find((node) => node.id === operation.edge.to); const source = graph.nodes.find((node) => node.id === operation.edge.from); if (target && source) { const prior = result.get(target.path) ?? { path: target.path, content: '', language }; result.set(target.path, { ...prior, content: adapter.connect(prior.content, `./${source.path.replace(/\.(tsx?|jsx?|py)$/, '')}`, source.name) }) } }
   }
   return [...result.values()].sort((a, b) => a.path.localeCompare(b.path))
 }

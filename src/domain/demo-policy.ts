@@ -1,9 +1,9 @@
 export const PUBLIC_DEMO_POLICY = {
-  canImportFolder: true,
-  canImportGitHub: true,
-  canEditSource: true,
-  canSaveSource: true,
-  canMovePieces: true,
-  canRunProcesses: true,
+  canImportFolder: false,
+  canImportGitHub: false,
+  canEditSource: false,
+  canSaveSource: false,
+  canMovePieces: false,
+  canRunProcesses: false,
   canReadBundledExample: true,
 } as const
