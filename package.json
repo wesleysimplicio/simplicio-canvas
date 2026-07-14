@@ -30,7 +30,10 @@
     "test:usability": "vitest run tests/onboarding-metrics.test.ts tests/onboarding-usability.test.ts",
     "test:readiness": "vitest run tests/release-readiness.test.ts",
     "test:evidence": "vitest run tests/compatibility-evidence.test.ts",
-    "verify:readiness": "node scripts/verify-readiness.mjs"
+    "verify:readiness": "node scripts/verify-readiness.mjs",
+    "test:integration": "vitest run tests/integration-visual-edit-pipeline.test.ts",
+    "test:system": "vitest run tests/system-workspace-lifecycle.test.ts",
+    "test:regression": "vitest run tests/regression-fixed-defects.test.ts"
   },
   "dependencies": { "three": "^0.178.0" },
   "devDependencies": {

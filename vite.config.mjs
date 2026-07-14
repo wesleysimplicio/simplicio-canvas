@@ -51,4 +51,32 @@ function githubImportPlugin() {
   }}
 }
 
-export default defineConfig({ base: process.env.VITE_BASE_PATH ?? '/', define: { __DEMO_MODE__: JSON.stringify(process.env.VITE_CANVAS_DEMO === 'true') }, server: { host: '127.0.0.1' }, plugins: [githubImportPlugin()] })
+export default defineConfig({
+  base: process.env.VITE_BASE_PATH ?? '/',
+  define: { __DEMO_MODE__: JSON.stringify(process.env.VITE_CANVAS_DEMO === 'true') },
+  server: { host: '127.0.0.1' },
+  plugins: [githubImportPlugin()],
+  test: {
+    exclude: [
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/dist-demo/**',
+      '**/.simplicio/**',
+      '**/.git/**',
+      '**/extension/**',
+      '**/.playwright-cli/**',
+    ],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'text-summary', 'html', 'json-summary'],
+      reportsDirectory: 'coverage',
+      include: ['src/**/*.ts'],
+      exclude: [
+        'src/**/*.d.ts',
+        'src/main.ts',
+        'src/example.ts',
+        'src/vite-env.d.ts',
+      ],
+    },
+  },
+})
